@@ -54,9 +54,10 @@ struct WindowListenDetailView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(currentCardID == nil ? "Create a private listen card" : "Edit listen card")
                 .font(.title.bold())
+                .foregroundStyle(Color.wbText)
             Text("Editing state is local until you save. Archive or delete older cards from this same detail screen.")
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.wbMuted)
         }
     }
 
@@ -97,17 +98,24 @@ struct WindowListenDetailView: View {
                     TextEditor(text: $draft.note)
                         .frame(minHeight: 112)
                         .padding(8)
-                        .background(Color.white.opacity(0.42), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .scrollContentBackground(.hidden)
+                        .foregroundStyle(Color.wbText)
+                        .background(Color.wbInk.opacity(0.78), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .stroke(Color.wbCyan.opacity(0.30), lineWidth: 1)
+                        }
                         .accessibilityLabel("Private note, optional and stored on this device")
                     HStack {
                         Text("Optional • \(draft.note.count)/240")
                             .font(.caption)
-                            .foregroundStyle(draft.note.count > 240 ? .red : .secondary)
+                            .foregroundStyle(draft.note.count > 240 ? Color.wbAmber : Color.wbMuted)
                         Spacer()
                         Button("Fill sample note") {
                             draft.note = "Heard a bright rhythm from the east window before breakfast."
                         }
                         .font(.caption)
+                        .foregroundStyle(Color.wbCyan)
                     }
                 }
             }
@@ -124,16 +132,19 @@ struct WindowListenDetailView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
+                .tint(Color.wbCyan)
 
                 Button("Simulate Save Failure", action: simulateSaveFailure)
                     .buttonStyle(.bordered)
                     .frame(maxWidth: .infinity)
+                    .tint(Color.wbAmber)
                     .accessibilityHint("Shows the local save error recovery copy")
 
                 if currentCardID != nil {
                     HStack {
                         Button("Archive Card", action: archiveCard)
                             .buttonStyle(.bordered)
+                            .tint(Color.wbCyan)
                         Button("Delete Card", role: .destructive, action: deleteCard)
                             .buttonStyle(.bordered)
                     }
@@ -144,7 +155,7 @@ struct WindowListenDetailView: View {
                     selectedTab = .map
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(Color(red: 0.55, green: 0.22, blue: 0.13))
+                .foregroundStyle(Color.wbLime)
             }
         }
     }
@@ -152,13 +163,18 @@ struct WindowListenDetailView: View {
     private func savedBanner(_ message: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "checkmark.seal.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.wbLime)
             Text(message)
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.wbText)
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(Color.wbPanelRaised.opacity(0.94), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.wbLime.opacity(0.42), lineWidth: 1)
+        }
         .accessibilityElement(children: .combine)
     }
 

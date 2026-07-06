@@ -30,9 +30,10 @@ struct BadgeRoostView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Badge Roost")
                 .font(.title.bold())
+                .foregroundStyle(Color.wbText)
             Text("Collect quiet exploration badges from saved listens. Premium adds visual packs only; the core flow stays free.")
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.wbMuted)
         }
     }
 
@@ -44,12 +45,12 @@ struct BadgeRoostView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Image(systemName: earned == nil ? "circle.dashed" : "rosette")
                             .font(.title2)
-                            .foregroundStyle(earned == nil ? .secondary : Color(red: 0.78, green: 0.34, blue: 0.20))
+                            .foregroundStyle(earned == nil ? Color.wbMuted : Color.wbLime)
                         Text(badgeType.displayName)
                             .font(.headline)
                         Text(earned == nil ? badgeType.description : "Earned for your private sound map.")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.wbMuted)
                     }
                     .frame(maxWidth: .infinity, minHeight: 126, alignment: .leading)
                 }
@@ -69,12 +70,13 @@ struct BadgeRoostView: View {
                         .font(.caption.weight(.semibold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(.thinMaterial, in: Capsule())
+                        .foregroundStyle(Color.wbInk)
+                        .background(Color.wbLime, in: Capsule())
                 }
 
                 Text(premiumStore.paywallSubtitle)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
 
                 if let message = premiumStore.lastErrorMessage ?? (showFailureCopy ? "Purchase could not be completed. Your free listening flow is still available." : nil) {
                     ErrorBanner(message: message)
@@ -85,12 +87,14 @@ struct BadgeRoostView: View {
                         Task { await premiumStore.purchasePremiumPack() }
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(Color.wbCyan)
                     .accessibilityLabel("Purchase Premium Pack with StoreKit 2")
 
                     Button("Restore Purchase") {
                         Task { await premiumStore.restorePurchases() }
                     }
                     .buttonStyle(.bordered)
+                    .tint(Color.wbCyan)
                     .accessibilityLabel("Restore Premium purchase")
                 }
 
@@ -100,7 +104,7 @@ struct BadgeRoostView: View {
                 }
                 .font(.caption)
                 .buttonStyle(.plain)
-                .foregroundStyle(Color(red: 0.55, green: 0.22, blue: 0.13))
+                .foregroundStyle(Color.wbAmber)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -113,11 +117,12 @@ struct BadgeRoostView: View {
                     .font(.headline)
                 Text(AppCopy.privacyBoundary)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
                 Button("Return to Morning Chorus") {
                     selectedTab = .morning
                 }
                 .buttonStyle(.bordered)
+                .tint(Color.wbCyan)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

@@ -27,34 +27,76 @@ struct MorningChorusView: View {
         VStack(alignment: .leading, spacing: 10) {
             Text("WindowBird Chorus Cards")
                 .font(.largeTitle.bold())
-                .foregroundStyle(Color(red: 0.14, green: 0.20, blue: 0.17))
+                .foregroundStyle(Color.wbText)
             Text("Turn two minutes of window birdsong into a private rhythm, direction, weather, and mood card.")
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.wbMuted)
         }
         .accessibilityElement(children: .combine)
     }
 
     private var todayCard: some View {
-        BirdSilhouetteCard(
-            shape: listenStore.favoriteShape ?? .trill,
-            title: "Today’s soft dawn listen",
-            subtitle: "Pick the rhythm you heard near your window, then turn it into a private chorus card."
-        )
-        .overlay(alignment: .bottomTrailing) {
-            NavigationLink {
-                SoundShapePickerView(selectedTab: $selectedTab, draft: ListenDraft())
-            } label: {
-                Text("Start a Listen")
-                    .font(.headline)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color(red: 0.78, green: 0.34, blue: 0.20), in: Capsule())
-                    .foregroundStyle(.white)
+        let shape = listenStore.favoriteShape ?? .trill
+        return GlassSurface(radius: 20) {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 16) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color.wbInk)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                    .stroke(Color.wbCyan.opacity(0.42), lineWidth: 1)
+                            }
+                        BirdSilhouette()
+                            .stroke(Color.wbCyan, lineWidth: 2)
+                            .padding(14)
+                        Text(shape.shortGlyph)
+                            .font(.caption2.weight(.black).monospaced())
+                            .foregroundStyle(Color.wbLime)
+                            .offset(y: 25)
+                    }
+                    .frame(width: 74, height: 74)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Today’s soft dawn listen")
+                            .font(.headline.weight(.black))
+                            .foregroundStyle(Color.wbText)
+                        Text("Pick the rhythm you heard near your window, then turn it into a private chorus card.")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.wbMuted)
+                    }
+                }
+
+                Divider()
+                    .overlay(Color.wbCyan.opacity(0.24))
+
+                HStack {
+                    Text("NEW LISTEN / LOCAL ONLY")
+                        .font(.caption2.weight(.bold).monospaced())
+                        .foregroundStyle(Color.wbLime)
+                    Spacer(minLength: 12)
+                    startListenButton
+                }
             }
-            .padding(20)
-            .accessibilityLabel("Start a new window listen")
         }
+    }
+
+    private var startListenButton: some View {
+        NavigationLink {
+            SoundShapePickerView(selectedTab: $selectedTab, draft: ListenDraft())
+        } label: {
+            Text("Start a Listen")
+                .font(.headline)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background {
+                    Capsule()
+                        .fill(Color.wbCyan)
+                        .shadow(color: Color.wbCyan.opacity(0.45), radius: 14)
+                }
+                .foregroundStyle(Color.wbInk)
+        }
+        .accessibilityLabel("Start a new window listen")
     }
 
     private var privacyCard: some View {
@@ -64,7 +106,7 @@ struct MorningChorusView: View {
                     .font(.headline)
                 Text(AppCopy.privacyBoundary)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -84,7 +126,7 @@ struct MorningChorusView: View {
                 } else {
                     Text("Your sound map is quiet for now. Start with the rhythm you can describe, not a bird name you have to know.")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.wbMuted)
                     NavigationLink("Choose a Sound Shape") {
                         SoundShapePickerView(selectedTab: $selectedTab, draft: ListenDraft())
                     }
@@ -106,11 +148,12 @@ struct MorningChorusView: View {
                         .font(.caption.weight(.semibold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(.thinMaterial, in: Capsule())
+                        .foregroundStyle(Color.wbInk)
+                        .background(Color.wbLime, in: Capsule())
                 }
                 Text("Extra visual themes and sticker roosts are optional. The core free listening flow stays open.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
                 Button("Open Badge Roost") {
                     selectedTab = .badges
                 }
@@ -126,18 +169,18 @@ struct ListenCardRow: View {
     var body: some View {
         HStack(spacing: 12) {
             BirdSilhouette()
-                .fill(Color(red: 0.21, green: 0.31, blue: 0.27))
+                .fill(Color.wbCyan.opacity(0.82))
                 .frame(width: 42, height: 42)
             VStack(alignment: .leading, spacing: 4) {
                 Text(card.soundShape.displayName)
                     .font(.headline)
                 Text("\(card.direction.displayName) • \(card.weather.displayName) • \(card.mood.displayName)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
                 if !card.note.isEmpty {
                     Text(card.note)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.wbMuted)
                         .lineLimit(2)
                 }
             }

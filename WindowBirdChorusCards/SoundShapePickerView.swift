@@ -11,19 +11,10 @@ struct SoundShapePickerView: View {
                 VStack(alignment: .leading, spacing: 22) {
                     intro
                     shapeGrid
+                    reviewLink
                     directionSection
                     weatherMoodSection
                     moodTip
-                    NavigationLink {
-                        WindowListenDetailView(selectedTab: $selectedTab, draft: draft)
-                    } label: {
-                        Label("Review Listen Card", systemImage: "square.and.pencil")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.large)
-                    .accessibilityLabel("Review the selected sound shape in Window Listen Detail")
                 }
                 .padding(20)
             }
@@ -36,10 +27,25 @@ struct SoundShapePickerView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("What shape did the sound make?")
                 .font(.title.bold())
+                .foregroundStyle(Color.wbText)
             Text("No species guess is needed. Pick the rhythm, direction, weather, and mood you actually noticed.")
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.wbMuted)
         }
+    }
+
+    private var reviewLink: some View {
+        NavigationLink {
+            WindowListenDetailView(selectedTab: $selectedTab, draft: draft)
+        } label: {
+            Label("Review Listen Card", systemImage: "square.and.pencil")
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.borderedProminent)
+        .controlSize(.large)
+        .tint(Color.wbCyan)
+        .accessibilityLabel("Review the selected sound shape in Window Listen Detail")
     }
 
     private var shapeGrid: some View {
@@ -51,17 +57,20 @@ struct SoundShapePickerView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text(shape.shortGlyph)
                             .font(.largeTitle.weight(.black))
+                            .foregroundStyle(shape == draft.soundShape ? Color.wbInk : Color.wbCyan)
                         Text(shape.displayName)
                             .font(.headline)
                             .multilineTextAlignment(.leading)
+                            .foregroundStyle(shape == draft.soundShape ? Color.wbInk : Color.wbText)
                     }
                     .frame(maxWidth: .infinity, minHeight: 106, alignment: .leading)
                     .padding(14)
-                    .background(cardBackground(for: shape), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                    .background(cardBackground(for: shape), in: UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 6, bottomTrailingRadius: 24, topTrailingRadius: 6, style: .continuous))
                     .overlay {
-                        RoundedRectangle(cornerRadius: 22, style: .continuous)
-                            .stroke(shape == draft.soundShape ? Color(red: 0.78, green: 0.34, blue: 0.20) : .clear, lineWidth: 3)
+                        UnevenRoundedRectangle(topLeadingRadius: 24, bottomLeadingRadius: 6, bottomTrailingRadius: 24, topTrailingRadius: 6, style: .continuous)
+                            .stroke(shape == draft.soundShape ? Color.wbLime : Color.wbCyan.opacity(0.26), lineWidth: shape == draft.soundShape ? 3 : 1)
                     }
+                    .shadow(color: shape == draft.soundShape ? Color.wbLime.opacity(0.28) : .clear, radius: 14, y: 8)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Select \(shape.displayName)")
@@ -120,6 +129,14 @@ struct SoundShapePickerView: View {
     }
 
     private func cardBackground(for shape: SoundShape) -> some ShapeStyle {
-        shape == draft.soundShape ? AnyShapeStyle(Color.white.opacity(0.82)) : AnyShapeStyle(Color.white.opacity(0.42))
+        shape == draft.soundShape
+            ? AnyShapeStyle(
+                LinearGradient(
+                    colors: [Color.wbLime, Color.wbCyan],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            : AnyShapeStyle(Color.wbPanelRaised.opacity(0.90))
     }
 }

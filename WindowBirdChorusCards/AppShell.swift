@@ -29,6 +29,12 @@ struct AppShell: View {
             .tabItem { Label("Badges", systemImage: "rosette") }
             .tag(AppTab.badges)
         }
-        .tint(Color(red: 0.66, green: 0.27, blue: 0.16))
+        .tint(Color.wbCyan)
+        .preferredColorScheme(.dark)
+        .toolbarBackground(Color.wbInk, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .toolbarBackground(Color.wbInk.opacity(0.94), for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }

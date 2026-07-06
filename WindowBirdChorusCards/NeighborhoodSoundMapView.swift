@@ -31,9 +31,10 @@ struct NeighborhoodSoundMapView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Neighborhood Sound Map")
                 .font(.title.bold())
+                .foregroundStyle(Color.wbText)
             Text("Review saved rhythm, direction, weather, and mood patterns. This is a private memory map, not a live community service.")
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.wbMuted)
         }
     }
 
@@ -48,11 +49,12 @@ struct NeighborhoodSoundMapView: View {
                             .font(.subheadline.weight(.semibold))
                         Text("Start a listen from Morning Chorus to place the first neighborhood sound dot.")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.wbMuted)
                         Button("Go to Morning Chorus") {
                             selectedTab = .morning
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(Color.wbCyan)
                     }
                 } else {
                     ForEach(listenStore.activeCards) { card in
@@ -67,7 +69,7 @@ struct NeighborhoodSoundMapView: View {
                     }
                     Text("Swipe-style actions are also available inside Window Listen Detail: edit, archive, or delete.")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.wbMuted)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -93,7 +95,7 @@ struct NeighborhoodSoundMapView: View {
                     if listenStore.archivedCards.isEmpty {
                         Text("No archived listen cards yet. Archive from Window Listen Detail when a card should leave the active map.")
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.wbMuted)
                     } else {
                         ForEach(listenStore.archivedCards) { card in
                             HStack(alignment: .top, spacing: 12) {
@@ -119,11 +121,12 @@ struct NeighborhoodSoundMapView: View {
                     .font(.headline)
                 Text("Optional sticker roosts and dawn themes live in Badge Roost. Your saved cards stay readable without Premium.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
                 Button("Open Premium Boundary") {
                     selectedTab = .badges
                 }
                 .buttonStyle(.bordered)
+                .tint(Color.wbCyan)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -132,13 +135,18 @@ struct NeighborhoodSoundMapView: View {
     private func savedBanner(_ message: String) -> some View {
         HStack(spacing: 10) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.wbLime)
             Text(message)
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.wbText)
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color.green.opacity(0.12), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(Color.wbPanelRaised.opacity(0.94), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.wbLime.opacity(0.42), lineWidth: 1)
+        }
     }
 
     private func delete(_ card: ListenCard) {

@@ -1,32 +1,81 @@
 import SwiftUI
 
+extension Color {
+    static let wbInk = Color(red: 0.02, green: 0.05, blue: 0.06)
+    static let wbPanel = Color(red: 0.04, green: 0.10, blue: 0.11)
+    static let wbPanelRaised = Color(red: 0.07, green: 0.15, blue: 0.15)
+    static let wbCyan = Color(red: 0.15, green: 0.93, blue: 0.82)
+    static let wbLime = Color(red: 0.78, green: 0.96, blue: 0.45)
+    static let wbAmber = Color(red: 1.00, green: 0.62, blue: 0.22)
+    static let wbText = Color(red: 0.90, green: 0.98, blue: 0.94)
+    static let wbMuted = Color(red: 0.56, green: 0.70, blue: 0.66)
+}
+
 struct DawnGradientBackground: View {
     var body: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 1.0, green: 0.75, blue: 0.55),
-                Color(red: 0.98, green: 0.90, blue: 0.72),
-                Color(red: 0.76, green: 0.86, blue: 0.84)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .overlay(alignment: .topTrailing) {
-            Circle()
-                .fill(.white.opacity(0.32))
-                .frame(width: 220, height: 220)
-                .blur(radius: 8)
-                .offset(x: 70, y: -60)
-        }
-        .overlay(alignment: .bottomLeading) {
-            Circle()
-                .fill(Color(red: 0.45, green: 0.58, blue: 0.52).opacity(0.22))
-                .frame(width: 260, height: 260)
-                .blur(radius: 18)
-                .offset(x: -90, y: 100)
+        GeometryReader { proxy in
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        .wbInk,
+                        Color(red: 0.01, green: 0.13, blue: 0.15),
+                        Color(red: 0.02, green: 0.20, blue: 0.18)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+
+                RadarGrid()
+                    .stroke(Color.wbCyan.opacity(0.10), lineWidth: 1)
+                    .frame(width: proxy.size.width * 1.28, height: proxy.size.height * 1.02)
+                    .rotationEffect(.degrees(-8))
+                    .offset(x: proxy.size.width * 0.07, y: proxy.size.height * 0.08)
+
+                Circle()
+                    .stroke(Color.wbCyan.opacity(0.18), lineWidth: 2)
+                    .frame(width: proxy.size.width * 0.86, height: proxy.size.width * 0.86)
+                    .offset(x: proxy.size.width * 0.34, y: -proxy.size.height * 0.18)
+
+                Circle()
+                    .fill(Color.wbCyan.opacity(0.10))
+                    .frame(width: proxy.size.width * 0.66, height: proxy.size.width * 0.66)
+                    .blur(radius: 40)
+                    .offset(x: -proxy.size.width * 0.30, y: proxy.size.height * 0.30)
+
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [.clear, Color.wbAmber.opacity(0.10)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .clipped()
         }
         .ignoresSafeArea()
         .accessibilityHidden(true)
+    }
+}
+
+private struct RadarGrid: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let step: CGFloat = 34
+        var x = rect.minX
+        while x <= rect.maxX {
+            path.move(to: CGPoint(x: x, y: rect.minY))
+            path.addLine(to: CGPoint(x: x, y: rect.maxY))
+            x += step
+        }
+        var y = rect.minY
+        while y <= rect.maxY {
+            path.move(to: CGPoint(x: rect.minX, y: y))
+            path.addLine(to: CGPoint(x: rect.maxX, y: y))
+            y += step
+        }
+        return path
     }
 }
 
@@ -40,15 +89,30 @@ struct GlassSurface<Content: View>: View {
     }
 
     var body: some View {
-        if #available(iOS 26.0, *) {
-            content
-                .padding(16)
-                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: radius))
-        } else {
-            content
-                .padding(16)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-        }
+        content
+            .padding(16)
+            .foregroundStyle(Color.wbText)
+            .background {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: radius,
+                    bottomLeadingRadius: 8,
+                    bottomTrailingRadius: radius,
+                    topTrailingRadius: 8,
+                    style: .continuous
+                )
+                .fill(Color.wbPanel.opacity(0.92))
+                .overlay {
+                    UnevenRoundedRectangle(
+                        topLeadingRadius: radius,
+                        bottomLeadingRadius: 8,
+                        bottomTrailingRadius: radius,
+                        topTrailingRadius: 8,
+                        style: .continuous
+                    )
+                    .stroke(Color.wbCyan.opacity(0.30), lineWidth: 1)
+                }
+                .shadow(color: Color.wbCyan.opacity(0.12), radius: 18, y: 10)
+            }
     }
 }
 
@@ -58,28 +122,32 @@ struct BirdSilhouetteCard: View {
     let subtitle: String
 
     var body: some View {
-        GlassSurface(radius: 28) {
+        GlassSurface(radius: 20) {
             HStack(spacing: 16) {
                 ZStack {
-                    Circle()
-                        .fill(Color(red: 0.20, green: 0.29, blue: 0.25).opacity(0.12))
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.wbInk)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .stroke(Color.wbCyan.opacity(0.42), lineWidth: 1)
+                        }
                     BirdSilhouette()
-                        .fill(Color(red: 0.17, green: 0.25, blue: 0.22))
+                        .stroke(Color.wbCyan, lineWidth: 2)
                         .padding(14)
                     Text(shape.shortGlyph)
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(.white)
-                        .offset(y: 23)
+                        .font(.caption2.weight(.black).monospaced())
+                        .foregroundStyle(Color.wbLime)
+                        .offset(y: 25)
                 }
                 .frame(width: 74, height: 74)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(title)
-                        .font(.headline)
-                        .foregroundStyle(Color(red: 0.16, green: 0.20, blue: 0.18))
+                        .font(.headline.weight(.black))
+                        .foregroundStyle(Color.wbText)
                     Text(subtitle)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.wbMuted)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 0)
@@ -126,23 +194,30 @@ struct DirectionRing: View {
     var body: some View {
         ZStack {
             Circle()
-                .strokeBorder(Color(red: 0.20, green: 0.30, blue: 0.26).opacity(0.30), lineWidth: 2)
+                .fill(Color.wbInk.opacity(0.72))
+            ForEach([38, 72, 106], id: \.self) { size in
+                Circle()
+                    .stroke(Color.wbCyan.opacity(0.20), style: StrokeStyle(lineWidth: 1, dash: [4, 5]))
+                    .frame(width: CGFloat(size), height: CGFloat(size))
+            }
+            Circle()
+                .strokeBorder(Color.wbCyan.opacity(0.55), lineWidth: 2)
             ForEach(ListenDirection.allCases) { marker in
                 Text(String(marker.displayName.prefix(1)))
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(marker == direction ? .primary : .secondary)
+                    .font(.caption2.weight(.bold).monospaced())
+                    .foregroundStyle(marker == direction ? Color.wbLime : Color.wbMuted)
                     .offset(y: -58)
                     .rotationEffect(.degrees(marker.degrees))
                     .rotationEffect(.degrees(-marker.degrees))
             }
             Capsule()
-                .fill(Color(red: 0.86, green: 0.37, blue: 0.22))
-                .frame(width: 7, height: 58)
+                .fill(Color.wbLime)
+                .frame(width: 5, height: 58)
                 .offset(y: -28)
                 .rotationEffect(.degrees(direction.degrees))
-                .shadow(color: .black.opacity(0.16), radius: 4, y: 2)
+                .shadow(color: Color.wbLime.opacity(0.7), radius: 8)
             Circle()
-                .fill(Color(red: 0.18, green: 0.26, blue: 0.22))
+                .fill(Color.wbCyan)
                 .frame(width: 12, height: 12)
         }
         .frame(width: 142, height: 142)
@@ -156,8 +231,17 @@ struct NeighborhoodSoundDots: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(Color(red: 0.18, green: 0.29, blue: 0.25).opacity(0.10))
+                UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 8, bottomTrailingRadius: 28, topTrailingRadius: 8)
+                    .fill(Color.wbInk.opacity(0.82))
+                    .overlay {
+                        RadarMapGrid()
+                            .stroke(Color.wbCyan.opacity(0.16), lineWidth: 1)
+                            .padding(18)
+                    }
+                    .overlay {
+                        UnevenRoundedRectangle(topLeadingRadius: 28, bottomLeadingRadius: 8, bottomTrailingRadius: 28, topTrailingRadius: 8)
+                            .stroke(Color.wbCyan.opacity(0.38), lineWidth: 1)
+                    }
                 ForEach(cards.prefix(24)) { card in
                     SoundDot(card: card)
                         .position(position(for: card, in: proxy.size))
@@ -165,12 +249,12 @@ struct NeighborhoodSoundDots: View {
                 if cards.isEmpty {
                     VStack(spacing: 8) {
                         BirdSilhouette()
-                            .stroke(Color.secondary.opacity(0.45), lineWidth: 2)
+                            .stroke(Color.wbCyan.opacity(0.55), lineWidth: 2)
                             .frame(width: 56, height: 56)
                         Text("Your sound map is quiet for now.")
                             .font(.subheadline.weight(.semibold))
                     }
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.wbMuted)
                     .multilineTextAlignment(.center)
                 }
             }
@@ -191,6 +275,23 @@ struct NeighborhoodSoundDots: View {
     }
 }
 
+private struct RadarMapGrid: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        for radius in stride(from: min(rect.width, rect.height) * 0.18, through: min(rect.width, rect.height) * 0.46, by: 34) {
+            path.addEllipse(in: CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2))
+        }
+        for angle in stride(from: 0.0, to: 360.0, by: 45.0) {
+            let radians = angle * .pi / 180
+            let length = min(rect.width, rect.height) * 0.48
+            path.move(to: center)
+            path.addLine(to: CGPoint(x: center.x + cos(radians) * length, y: center.y + sin(radians) * length))
+        }
+        return path
+    }
+}
+
 private struct SoundDot: View {
     let card: ListenCard
 
@@ -199,23 +300,25 @@ private struct SoundDot: View {
             Circle()
                 .fill(color)
                 .frame(width: 24, height: 24)
+                .shadow(color: color.opacity(0.8), radius: 8)
                 .overlay {
                     Text(card.soundShape.shortGlyph)
                         .font(.system(size: 7, weight: .black))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.wbInk)
                 }
             Text(card.direction.displayName.prefix(1))
                 .font(.caption2.weight(.bold))
+                .foregroundStyle(Color.wbText)
         }
         .accessibilityLabel("\(card.soundShape.displayName) from \(card.direction.displayName)")
     }
 
     private var color: Color {
         switch card.mood {
-        case .curious: Color(red: 0.87, green: 0.39, blue: 0.25)
-        case .calm: Color(red: 0.34, green: 0.55, blue: 0.49)
-        case .bright: Color(red: 0.94, green: 0.63, blue: 0.26)
-        case .sleepy: Color(red: 0.46, green: 0.49, blue: 0.66)
+        case .curious: Color.wbCyan
+        case .calm: Color.wbLime
+        case .bright: Color.wbAmber
+        case .sleepy: Color(red: 0.52, green: 0.66, blue: 1.0)
         }
     }
 }
@@ -226,14 +329,18 @@ struct ErrorBanner: View {
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundStyle(Color(red: 0.78, green: 0.24, blue: 0.16))
+                .foregroundStyle(Color.wbAmber)
             Text(message)
                 .font(.subheadline)
-                .foregroundStyle(Color(red: 0.35, green: 0.12, blue: 0.08))
+                .foregroundStyle(Color.wbText)
             Spacer(minLength: 0)
         }
         .padding(12)
-        .background(Color(red: 1.0, green: 0.89, blue: 0.82), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(Color(red: 0.28, green: 0.09, blue: 0.08).opacity(0.92), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(Color.wbAmber.opacity(0.45), lineWidth: 1)
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Error: \(message)")
     }

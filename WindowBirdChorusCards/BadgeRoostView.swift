@@ -12,8 +12,8 @@ struct BadgeRoostView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
-                    badgeGrid
                     paywall
+                    badgeGrid
                     freeFlowReminder
                 }
                 .padding(20)

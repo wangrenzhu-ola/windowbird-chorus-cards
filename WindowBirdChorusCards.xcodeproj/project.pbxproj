@@ -14,26 +14,35 @@
 			remoteGlobalIDString = A00000000000000000000009;
 			remoteInfo = WindowBirdChorusCards;
 		};
+		B00000000000000000000021 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A00000000000000000000009;
+			remoteInfo = WindowBirdChorusCards;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		A00000000000000000000002 /* WindowBirdChorusCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WindowBirdChorusCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000000000000000000003 /* WindowBirdChorusCardsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WindowBirdChorusCardsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B00000000000000000000003 /* WindowBirdChorusCardsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WindowBirdChorusCardsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A00000000000000000000004 /* WindowBirdChorusCards */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = WindowBirdChorusCards;
 			sourceTree = "<group>";
 		};
 		A00000000000000000000005 /* WindowBirdChorusCardsTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = WindowBirdChorusCardsTests;
+			sourceTree = "<group>";
+		};
+		B00000000000000000000005 /* WindowBirdChorusCardsUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WindowBirdChorusCardsUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -53,6 +62,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B00000000000000000000007 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -61,6 +77,7 @@
 			children = (
 				A00000000000000000000004 /* WindowBirdChorusCards */,
 				A00000000000000000000005 /* WindowBirdChorusCardsTests */,
+				B00000000000000000000005 /* WindowBirdChorusCardsUITests */,
 				A00000000000000000000019 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -70,6 +87,7 @@
 			children = (
 				A00000000000000000000002 /* WindowBirdChorusCards.app */,
 				A00000000000000000000003 /* WindowBirdChorusCardsTests.xctest */,
+				B00000000000000000000003 /* WindowBirdChorusCardsUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,6 +136,27 @@
 			productReference = A00000000000000000000003 /* WindowBirdChorusCardsTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		B00000000000000000000012 /* WindowBirdChorusCardsUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B00000000000000000000017 /* Build configuration list for PBXNativeTarget "WindowBirdChorusCardsUITests" */;
+			buildPhases = (
+				B00000000000000000000013 /* Sources */,
+				B00000000000000000000007 /* Frameworks */,
+				B00000000000000000000014 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B00000000000000000000022 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B00000000000000000000005 /* WindowBirdChorusCardsUITests */,
+			);
+			name = WindowBirdChorusCardsUITests;
+			productName = WindowBirdChorusCardsUITests;
+			productReference = B00000000000000000000003 /* WindowBirdChorusCardsUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -132,6 +171,10 @@
 						CreatedOnToolsVersion = 26.0;
 					};
 					A00000000000000000000012 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = A00000000000000000000009;
+					};
+					B00000000000000000000012 = {
 						CreatedOnToolsVersion = 26.0;
 						TestTargetID = A00000000000000000000009;
 					};
@@ -153,6 +196,7 @@
 			targets = (
 				A00000000000000000000009 /* WindowBirdChorusCards */,
 				A00000000000000000000012 /* WindowBirdChorusCardsTests */,
+				B00000000000000000000012 /* WindowBirdChorusCardsUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -166,6 +210,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A00000000000000000000014 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B00000000000000000000014 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -189,6 +240,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B00000000000000000000013 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -196,6 +254,11 @@
 			isa = PBXTargetDependency;
 			target = A00000000000000000000009 /* WindowBirdChorusCards */;
 			targetProxy = A00000000000000000000021 /* PBXContainerItemProxy */;
+		};
+		B00000000000000000000022 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A00000000000000000000009 /* WindowBirdChorusCards */;
+			targetProxy = B00000000000000000000021 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -429,6 +492,48 @@
 			};
 			name = Release;
 		};
+		B00000000000000000000027 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = WindowBirdChorusCards;
+			};
+			name = Debug;
+		};
+		B00000000000000000000028 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 0.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = WindowBirdChorusCards;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -455,6 +560,15 @@
 			buildConfigurations = (
 				A00000000000000000000027 /* Debug */,
 				A00000000000000000000028 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B00000000000000000000017 /* Build configuration list for PBXNativeTarget "WindowBirdChorusCardsUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B00000000000000000000027 /* Debug */,
+				B00000000000000000000028 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

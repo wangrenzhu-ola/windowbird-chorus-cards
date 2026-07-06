@@ -160,6 +160,15 @@ final class ListenStore {
     }
 
     private static func defaultStorageURL() -> URL {
+        if ProcessInfo.processInfo.arguments.contains("--windowbird-ui-test-store") {
+            let url = FileManager.default.temporaryDirectory
+                .appendingPathComponent("WindowBirdChorusCardsUITests", isDirectory: true)
+                .appendingPathComponent("listen-store.json")
+            if ProcessInfo.processInfo.arguments.contains("--reset-windowbird-store") {
+                try? FileManager.default.removeItem(at: url)
+            }
+            return url
+        }
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         return base

@@ -1,0 +1,23 @@
+{
+  "schema_version": "windowbird.xcode_runtime_report.v1",
+  "source_repo_path": "/Users/wangrenzhu/work/windowbird-chorus-cards",
+  "xcode_project": "/Users/wangrenzhu/work/windowbird-chorus-cards/WindowBirdChorusCards.xcodeproj",
+  "scheme": "WindowBirdChorusCards",
+  "destination": "id=BBB7317F-76C6-4BD5-BF4B-EF6ABAEBA1F8",
+  "runtime_device": "iPhone 17 iOS Simulator",
+  "bundle_identifier": "com.windowbird.choruscards",
+  "command": "xcodebuild -project WindowBirdChorusCards.xcodeproj -scheme WindowBirdChorusCards -destination id=BBB7317F-76C6-4BD5-BF4B-EF6ABAEBA1F8 -parallel-testing-enabled NO -only-testing:WindowBirdChorusCardsUITests CODE_SIGNING_ALLOWED=NO test",
+  "result": "PASS",
+  "runtime_markers": [
+    "xcodebuild",
+    "iOS Simulator",
+    "Launch com.windowbird.choruscards",
+    "XCODE_RUNTIME_FLOW PASS",
+    "** TEST SUCCEEDED **"
+  ],
+  "test_xcode_evidence_refs": [
+    "RuntimeEvidence/xcode_runtime_ui_test.log"
+  ],
+  "core_flow_readback": "Launched simulator app and walked Morning Chorus -> Sound Shape Picker -> Window Listen Detail save -> Neighborhood Sound Map readback -> Badge Roost Premium failure.",
+  "blockers": []
+}

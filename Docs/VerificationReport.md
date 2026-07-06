@@ -73,3 +73,20 @@ Test case 'VisualLocaleAcceptanceTests.testRequiredVisualSlotsAreImplemented()' 
   "xcodeproj": "/Users/wangrenzhu/work/windowbird-chorus-cards/WindowBirdChorusCards.xcodeproj"
 }
 ```
+
+
+## Xcode/Simulator runtime acceptance
+
+Runtime acceptance is backed by `RuntimeEvidence/xcode_runtime_report.json` and `RuntimeEvidence/xcode_runtime_ui_test.log`.
+
+Command:
+
+```bash
+xcodebuild -project WindowBirdChorusCards.xcodeproj -scheme WindowBirdChorusCards -destination id=BBB7317F-76C6-4BD5-BF4B-EF6ABAEBA1F8 -parallel-testing-enabled NO -only-testing:WindowBirdChorusCardsUITests CODE_SIGNING_ALLOWED=NO test
+```
+
+Result: `** TEST SUCCEEDED **`.
+
+Runtime flow marker: `XCODE_RUNTIME_FLOW PASS: launched simulator app and walked Morning Chorus -> Sound Shape Picker -> Window Listen Detail save -> Neighborhood Sound Map readback -> Badge Roost Premium failure`.
+
+This evidence is Xcode/Simulator runtime proof, not SwiftPM-only or source-grep evidence.

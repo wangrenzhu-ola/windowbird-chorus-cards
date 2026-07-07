@@ -15,6 +15,7 @@ struct MorningChorusView: View {
                     todayCard
                     privacyCard
                     recentCard
+                    badgesEntry
                     shopEntry
                 }
                 .padding(20)
@@ -161,16 +162,32 @@ struct MorningChorusView: View {
         }
     }
 
+    private var badgesEntry: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Exploration badges", systemImage: "rosette")
+                    .font(.headline)
+                Text("Quiet milestones from saved listens — separate from the credit shop.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+                NavigationLink("Open Badge Roost") {
+                    BadgeRoostView()
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+    }
+
     private var shopEntry: some View {
         GlassSurface {
             VStack(alignment: .leading, spacing: 10) {
                 Label("Chorus Credit Shop", systemImage: "bag.fill")
                     .font(.headline)
-                Text("Need more credits for new listen cards? Badge Roost lists every credit pack without showing internal product codes.")
+                Text("Need more credits for new listen cards? The Shop tab lists recommended packs first.")
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
                 Button("Open Chorus Credit Shop") {
-                    selectedTab = .badges
+                    selectedTab = .shop
                 }
                 .buttonStyle(.bordered)
             }

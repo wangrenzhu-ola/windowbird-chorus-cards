@@ -3,7 +3,7 @@ import SwiftUI
 enum AppTab: Hashable {
     case morning
     case map
-    case badges
+    case shop
 }
 
 struct AppShell: View {
@@ -24,10 +24,10 @@ struct AppShell: View {
             .tag(AppTab.map)
 
             NavigationStack {
-                BadgeRoostView(selectedTab: $selectedTab)
+                ChorusCreditShopView()
             }
-            .tabItem { Label("Badges", systemImage: "rosette") }
-            .tag(AppTab.badges)
+            .tabItem { Label("Shop", systemImage: "bag.fill") }
+            .tag(AppTab.shop)
         }
         .tint(Color.wbCyan)
         .preferredColorScheme(.dark)

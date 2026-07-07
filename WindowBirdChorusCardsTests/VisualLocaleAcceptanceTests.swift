@@ -27,7 +27,7 @@ final class VisualLocaleAcceptanceTests: XCTestCase {
     }
 
     func testRequiredScreenNamesArePresent() {
-        let screens = Set(["Morning Chorus", "Sound Shape Picker", "Window Listen Detail", "Neighborhood Sound Map", "Badge Roost"])
+        let screens = Set(["Morning Chorus", "Sound Shape Picker", "Window Listen Detail", "Neighborhood Sound Map", "Chorus Credit Shop", "Badge Roost"])
         for screen in screens {
             XCTAssertTrue(AppCopy.userVisibleSamples.contains(screen), "Missing screen copy: \(screen)")
         }

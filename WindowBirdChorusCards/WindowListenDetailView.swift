@@ -37,17 +37,19 @@ struct WindowListenDetailView: View {
                     if let savedMessage {
                         savedBanner(savedMessage)
                     }
+                    if currentCardID == nil {
+                        rhythmSummaryCard
+                    }
                     WindowViewPhotoSection(
                         draft: $draft,
                         screenFraction: 0.58,
                         caption: "\(draft.soundShape.displayName) • \(draft.direction.displayName)"
                     )
-                    BirdSilhouetteCard(
-                        shape: draft.soundShape,
-                        title: draft.soundShape.displayName,
-                        subtitle: "\(draft.direction.displayName) • \(draft.weather.displayName) • \(draft.mood.displayName)"
-                    )
-                    editFields
+                    if currentCardID != nil {
+                        shapeEditSection
+                    }
+                    ListenMetadataFields(draft: $draft)
+                    noteSection
                     actions
                 }
                 .padding(20)
@@ -90,62 +92,54 @@ struct WindowListenDetailView: View {
         }
     }
 
-    private var editFields: some View {
+    private var rhythmSummaryCard: some View {
+        let card = BirdMoodCard.all.first { $0.shape == draft.soundShape } ?? BirdMoodCard.all[0]
+        return BirdSilhouetteCard(shape: card.shape, title: card.shape.displayName, subtitle: card.tip)
+    }
+
+    private var shapeEditSection: some View {
         GlassSurface {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Sound shape")
+                    .font(.headline)
                 Picker("Sound shape", selection: $draft.soundShape) {
                     ForEach(SoundShape.allCases) { shape in
                         Text(shape.displayName).tag(shape)
                     }
                 }
                 .accessibilityLabel("Sound shape")
+            }
+        }
+    }
 
-                Picker("Direction", selection: $draft.direction) {
-                    ForEach(ListenDirection.allCases) { direction in
-                        Text(direction.displayName).tag(direction)
+    private var noteSection: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Private note")
+                    .font(.headline)
+                TextEditor(text: $draft.note)
+                    .frame(minHeight: 112)
+                    .padding(8)
+                    .scrollContentBackground(.hidden)
+                    .foregroundStyle(Color.wbText)
+                    .background(Color.wbInk.opacity(0.78), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .stroke(Color.wbCyan.opacity(0.30), lineWidth: 1)
                     }
-                }
-                .accessibilityLabel("Direction")
-
-                Picker("Weather", selection: $draft.weather) {
-                    ForEach(WeatherTag.allCases) { weather in
-                        Text(weather.displayName).tag(weather)
-                    }
-                }
-                .accessibilityLabel("Weather")
-
-                Picker("Mood", selection: $draft.mood) {
-                    ForEach(MoodTag.allCases) { mood in
-                        Text(mood.displayName).tag(mood)
-                    }
-                }
-                .accessibilityLabel("Mood")
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Private note")
-                        .font(.headline)
-                    TextEditor(text: $draft.note)
-                        .frame(minHeight: 112)
-                        .padding(8)
-                        .scrollContentBackground(.hidden)
-                        .foregroundStyle(Color.wbText)
-                        .background(Color.wbInk.opacity(0.78), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(Color.wbCyan.opacity(0.30), lineWidth: 1)
-                        }
-                        .accessibilityLabel("Private note, optional and stored on this device")
-                    HStack {
-                        Text("Optional • \(draft.note.count)/240")
-                            .font(.caption)
-                            .foregroundStyle(draft.note.count > 240 ? Color.wbAmber : Color.wbMuted)
-                        Spacer()
-                        Button("Fill sample note") {
-                            draft.note = "Heard a bright rhythm from the east window before breakfast."
-                        }
+                    .accessibilityLabel("Private note, optional and stored on this device")
+                HStack {
+                    Text("Optional • \(draft.note.count)/240")
                         .font(.caption)
-                        .foregroundStyle(Color.wbCyan)
+                        .foregroundStyle(draft.note.count > 240 ? Color.wbAmber : Color.wbMuted)
+                    Spacer()
+                    #if DEBUG
+                    Button("Fill sample note") {
+                        draft.note = "Heard a bright rhythm from the east window before breakfast."
                     }
+                    .font(.caption)
+                    .foregroundStyle(Color.wbCyan)
+                    #endif
                 }
             }
         }
@@ -172,18 +166,20 @@ struct WindowListenDetailView: View {
 
                 if currentCardID == nil && creditStore.balance < ChorusCreditStore.saveCost {
                     Button("Get Chorus Credits") {
-                        selectedTab = .badges
+                        selectedTab = .shop
                     }
                     .buttonStyle(.bordered)
                     .tint(Color.wbAmber)
                     .frame(maxWidth: .infinity)
                 }
 
+                #if DEBUG
                 Button("Simulate Save Failure", action: simulateSaveFailure)
                     .buttonStyle(.bordered)
                     .frame(maxWidth: .infinity)
                     .tint(Color.wbAmber)
                     .accessibilityHint("Shows the local save error recovery copy")
+                #endif
 
                 if currentCardID != nil {
                     HStack {

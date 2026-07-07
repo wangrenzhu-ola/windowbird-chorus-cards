@@ -63,4 +63,14 @@ enum IAPProductCatalog {
     static func item(for productID: String) -> IAPCatalogItem? {
         all.first { $0.productID == productID }
     }
+
+    static let featuredProductIDs: [String] = ["473919", "473920", "473904", "473907", "473910"]
+
+    static var featuredProducts: [IAPCatalogItem] {
+        featuredProductIDs.compactMap(item(for:))
+    }
+
+    static var additionalProducts: [IAPCatalogItem] {
+        all.filter { !featuredProductIDs.contains($0.productID) }
+    }
 }

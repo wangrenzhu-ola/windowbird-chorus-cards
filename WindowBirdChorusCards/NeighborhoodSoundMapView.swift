@@ -19,6 +19,7 @@ struct NeighborhoodSoundMapView: View {
                     }
                     activeSection
                     archiveSection
+                    badgesEntry
                     shopEntry
                 }
                 .padding(20)
@@ -141,16 +142,34 @@ struct NeighborhoodSoundMapView: View {
         }
     }
 
+    private var badgesEntry: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Exploration badges", systemImage: "rosette")
+                    .font(.headline)
+                Text("Earned quietly as you save listens — view them in Badge Roost.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+                NavigationLink("Open Badge Roost") {
+                    BadgeRoostView()
+                }
+                .buttonStyle(.bordered)
+                .tint(Color.wbCyan)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
     private var shopEntry: some View {
         GlassSurface {
             VStack(alignment: .leading, spacing: 10) {
                 Label("Chorus Credit Shop", systemImage: "bag.fill")
                     .font(.headline)
-                Text("Each new listen card costs \(ChorusCreditStore.saveCost.formatted()) credits. Open Badge Roost to buy more Chorus Credits.")
+                Text("Each new listen card costs \(ChorusCreditStore.saveCost.formatted()) credits. Open the Shop tab to buy more Chorus Credits.")
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
                 Button("Open Chorus Credit Shop") {
-                    selectedTab = .badges
+                    selectedTab = .shop
                 }
                 .buttonStyle(.bordered)
                 .tint(Color.wbCyan)

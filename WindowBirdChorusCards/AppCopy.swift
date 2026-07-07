@@ -1,7 +1,7 @@
 import Foundation
 
 enum AppCopy {
-    static let privacyBoundary = "Listen cards, window view photos, and notes stay on this device. The listening flow does not require microphone recording. Premium offers may use limited tracking to understand what feels helpful."
+    static let privacyBoundary = "Listen cards, window view photos, and notes stay on this device. The listening flow does not require microphone recording. Credit purchases use StoreKit and do not restore previous balances."
     static let productName = "WindowBird Chorus Cards"
     static let privacyPolicyTitle = "Privacy Policy"
     static let userAgreementTitle = "User Agreement"
@@ -14,16 +14,19 @@ enum AppCopy {
         "Sound Shape Picker",
         "Window Listen Detail",
         "Neighborhood Sound Map",
+        "Chorus Credit Shop",
         "Badge Roost",
+        "Exploration badges",
         "Start a Listen",
+        "Continue to Listen Card",
         "Pick the rhythm you heard near your window, then turn it into a private chorus card.",
         "Chorus Credits",
-        "Chorus Credit Shop",
         "Open Chorus Credit Shop",
+        "Open Badge Roost",
         "Save Listen Card · 10 Credits",
         "Get Chorus Credits",
-        "Limited Offers",
-        "Chorus Credit Packs",
+        "Recommended Packs",
+        "Show All Credit Packs",
         "Buy Credits",
         "Window view",
         "Choose from Photos",

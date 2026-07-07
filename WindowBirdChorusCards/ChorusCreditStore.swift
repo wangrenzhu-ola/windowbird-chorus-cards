@@ -7,7 +7,7 @@ enum ChorusCreditError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .insufficientCredits(let needed, let available):
-            "Saving a new listen card costs \(needed) Chorus Credits. You have \(available). Open Chorus Credit Shop in Badge Roost to add more."
+            "Saving a new listen card costs \(needed) Chorus Credits. You have \(available). Open the Shop tab to add more."
         }
     }
 }

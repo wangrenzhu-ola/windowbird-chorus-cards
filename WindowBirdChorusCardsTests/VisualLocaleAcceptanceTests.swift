@@ -8,6 +8,7 @@ final class VisualLocaleAcceptanceTests: XCTestCase {
         XCTAssertTrue(slots.contains(.illustratedBirdSilhouetteCards))
         XCTAssertTrue(slots.contains(.compassLikeDirectionRing))
         XCTAssertTrue(slots.contains(.neighborhoodSoundDots))
+        XCTAssertTrue(slots.contains(.windowViewPhotos))
         print("ACCEPTANCE_READBACK REQ-VIS-001: soft dawn gradient, bird silhouette cards, compass ring, and neighborhood sound dots are modeled as visual slots")
     }
 
@@ -18,6 +19,7 @@ final class VisualLocaleAcceptanceTests: XCTestCase {
             XCTAssertEqual(hanRegex.numberOfMatches(in: copy, range: range), 0, "Expected en-US copy only: \(copy)")
         }
         XCTAssertTrue(AppCopy.privacyBoundary.contains("No microphone recording is required"))
+        XCTAssertTrue(AppCopy.privacyBoundary.contains("window view photos"))
         print("ACCEPTANCE_READBACK REQ-EMPTY-001 REQ-PRIVACY-001 Locale: core UI/paywall/privacy sample copy is en-US and includes privacy boundary")
     }
 

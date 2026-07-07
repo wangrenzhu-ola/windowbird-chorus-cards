@@ -35,6 +35,11 @@ struct WindowListenDetailView: View {
                     if let savedMessage {
                         savedBanner(savedMessage)
                     }
+                    WindowViewPhotoSection(
+                        draft: $draft,
+                        screenFraction: 0.58,
+                        caption: "\(draft.soundShape.displayName) • \(draft.direction.displayName)"
+                    )
                     BirdSilhouetteCard(
                         shape: draft.soundShape,
                         title: draft.soundShape.displayName,
@@ -182,7 +187,18 @@ struct WindowListenDetailView: View {
         do {
             let id = currentCardID ?? UUID()
             let heardAt = originalHeardAt ?? Date()
-            let card = draft.makeCard(id: id, heardAt: heardAt)
+            var card = draft.makeCard(id: id, heardAt: heardAt)
+
+            if let pendingData = draft.pendingWindowPhotoData {
+                if let oldFilename = card.windowPhotoFilename {
+                    WindowPhotoStore.delete(filename: oldFilename)
+                }
+                let filename = try listenStore.persistWindowPhoto(data: pendingData, cardID: id)
+                card.windowPhotoFilename = filename
+                draft.windowPhotoFilename = filename
+                draft.pendingWindowPhotoData = nil
+            }
+
             try listenStore.save(card)
             currentCardID = id
             originalHeardAt = heardAt

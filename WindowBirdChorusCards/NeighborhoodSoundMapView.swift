@@ -12,6 +12,7 @@ struct NeighborhoodSoundMapView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
+                    windowMemorySpotlight
                     NeighborhoodSoundDots(cards: listenStore.activeCards)
                     if let actionMessage {
                         savedBanner(actionMessage)
@@ -32,9 +33,35 @@ struct NeighborhoodSoundMapView: View {
             Text("Neighborhood Sound Map")
                 .font(.title.bold())
                 .foregroundStyle(Color.wbText)
-            Text("Review saved rhythm, direction, weather, and mood patterns. This is a private memory map, not a live community service.")
+            Text("Review saved rhythm, direction, weather, and mood patterns. Window view photos stay on this private memory map.")
                 .font(.body)
                 .foregroundStyle(Color.wbMuted)
+        }
+    }
+
+    @ViewBuilder
+    private var windowMemorySpotlight: some View {
+        if let featured = listenStore.activeCards.first(where: { $0.windowPhotoFilename != nil }) {
+            GlassSurface(radius: 20) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Window memory")
+                        .font(.headline)
+                    WindowViewPhotoReadOnly(
+                        card: featured,
+                        screenFraction: 0.52,
+                        caption: "\(featured.soundShape.displayName) from \(featured.direction.displayName)"
+                    )
+                    NavigationLink {
+                        WindowListenDetailView(selectedTab: $selectedTab, card: featured)
+                    } label: {
+                        Text("Open Listen Card")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.wbCyan)
+                }
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 import Foundation
 
 enum AppCopy {
-    static let privacyBoundary = "No microphone recording is required; optional notes stay private on device."
+    static let privacyBoundary = "No microphone recording is required; optional notes and window view photos stay private on device."
     static let productName = "WindowBird Chorus Cards"
     static let premiumProductID = "windowbird.chorus.premium.pack"
 
@@ -14,6 +14,10 @@ enum AppCopy {
         "Badge Roost",
         "Start a Listen",
         "Pick the rhythm you heard near your window, then turn it into a private chorus card.",
+        "Window view",
+        "Add Window View",
+        "Latest window view",
+        "Window memory",
         "Your sound map is quiet for now.",
         "Save Listen Card",
         "Archive Card",

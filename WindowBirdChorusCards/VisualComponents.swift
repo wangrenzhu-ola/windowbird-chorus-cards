@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 extension Color {
     static let wbInk = Color(red: 0.02, green: 0.05, blue: 0.06)
@@ -343,5 +344,195 @@ struct ErrorBanner: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Error: \(message)")
+    }
+}
+
+// MARK: - Window view photos (user-uploaded)
+
+struct WindowViewPhotoHero: View {
+    let uiImage: UIImage?
+    var screenFraction: CGFloat = 0.55
+    var caption: String?
+
+    private var heroHeight: CGFloat {
+        UIScreen.main.bounds.height * screenFraction
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Group {
+                if let uiImage {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(maxWidth: .infinity)
+                        .frame(height: heroHeight)
+                        .clipped()
+                        .overlay(alignment: .bottomLeading) {
+                            LinearGradient(
+                                colors: [.clear, Color.wbInk.opacity(0.72)],
+                                startPoint: .center,
+                                endPoint: .bottom
+                            )
+                            .frame(height: heroHeight * 0.38)
+                        }
+                        .overlay(alignment: .bottomLeading) {
+                            if let caption {
+                                Text(caption)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(Color.wbText)
+                                    .padding(16)
+                            }
+                        }
+                } else {
+                    ZStack {
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 28,
+                            bottomLeadingRadius: 8,
+                            bottomTrailingRadius: 28,
+                            topTrailingRadius: 8,
+                            style: .continuous
+                        )
+                        .fill(Color.wbInk.opacity(0.82))
+                        .overlay {
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 28,
+                                bottomLeadingRadius: 8,
+                                bottomTrailingRadius: 28,
+                                topTrailingRadius: 8,
+                                style: .continuous
+                            )
+                            .stroke(Color.wbCyan.opacity(0.30), style: StrokeStyle(lineWidth: 1, dash: [6, 5]))
+                        }
+                        VStack(spacing: 10) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.largeTitle)
+                                .foregroundStyle(Color.wbCyan.opacity(0.72))
+                            Text("No window view yet")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Color.wbMuted)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: heroHeight)
+                }
+            }
+            .clipShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 28,
+                    bottomLeadingRadius: 8,
+                    bottomTrailingRadius: 28,
+                    topTrailingRadius: 8,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 28,
+                    bottomLeadingRadius: 8,
+                    bottomTrailingRadius: 28,
+                    topTrailingRadius: 8,
+                    style: .continuous
+                )
+                .stroke(Color.wbCyan.opacity(uiImage == nil ? 0.30 : 0.42), lineWidth: 1)
+            }
+            .shadow(color: Color.wbCyan.opacity(uiImage == nil ? 0.08 : 0.18), radius: 16, y: 8)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(uiImage == nil ? "No window view photo" : "Window view photo, \(caption ?? "saved listen")")
+    }
+}
+
+struct WindowViewPhotoSection: View {
+    @Binding var draft: ListenDraft
+    var screenFraction: CGFloat = 0.55
+    var caption: String?
+
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var displayedImage: UIImage?
+
+    var body: some View {
+        GlassSurface(radius: 20) {
+            VStack(alignment: .leading, spacing: 14) {
+                Label("Window view", systemImage: "camera.viewfinder")
+                    .font(.headline)
+                Text("Optional photo of what you saw outside while listening. Stored privately on this device.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+
+                WindowViewPhotoHero(uiImage: displayedImage, screenFraction: screenFraction, caption: caption)
+
+                HStack(spacing: 12) {
+                    PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
+                        Label(displayedImage == nil ? "Add Window View" : "Replace Photo", systemImage: "photo.on.rectangle.angled")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.wbCyan)
+
+                    if displayedImage != nil {
+                        Button("Remove", role: .destructive) {
+                            removePhoto()
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+            }
+        }
+        .onAppear(perform: refreshDisplayedImage)
+        .onChange(of: selectedItem) { _, newItem in
+            guard let newItem else { return }
+            Task {
+                if let data = try? await newItem.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    await MainActor.run {
+                        draft.pendingWindowPhotoData = data
+                        draft.windowPhotoFilename = nil
+                        displayedImage = image
+                    }
+                }
+            }
+        }
+    }
+
+    private func refreshDisplayedImage() {
+        if let data = draft.pendingWindowPhotoData, let image = UIImage(data: data) {
+            displayedImage = image
+            return
+        }
+        if let filename = draft.windowPhotoFilename {
+            displayedImage = WindowPhotoStore.load(filename: filename)
+            return
+        }
+        displayedImage = nil
+    }
+
+    private func removePhoto() {
+        draft.pendingWindowPhotoData = nil
+        draft.windowPhotoFilename = nil
+        displayedImage = nil
+        selectedItem = nil
+    }
+}
+
+struct WindowViewPhotoReadOnly: View {
+    let card: ListenCard
+    var screenFraction: CGFloat = 0.50
+    var caption: String?
+
+    private var uiImage: UIImage? {
+        guard let filename = card.windowPhotoFilename else { return nil }
+        return WindowPhotoStore.load(filename: filename)
+    }
+
+    var body: some View {
+        if uiImage != nil {
+            WindowViewPhotoHero(
+                uiImage: uiImage,
+                screenFraction: screenFraction,
+                caption: caption ?? "\(card.soundShape.displayName) • \(card.direction.displayName)"
+            )
+        }
     }
 }

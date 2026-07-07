@@ -118,6 +118,11 @@ struct MorningChorusView: View {
                 Text(listenStore.activeCards.isEmpty ? "Starter action" : "Latest listen")
                     .font(.headline)
                 if let latest = listenStore.activeCards.first {
+                    WindowViewPhotoReadOnly(
+                        card: latest,
+                        screenFraction: 0.48,
+                        caption: "Latest window view"
+                    )
                     ListenCardRow(card: latest)
                     NavigationLink("Edit Latest Card") {
                         WindowListenDetailView(selectedTab: $selectedTab, card: latest)
@@ -168,9 +173,22 @@ struct ListenCardRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            BirdSilhouette()
-                .fill(Color.wbCyan.opacity(0.82))
-                .frame(width: 42, height: 42)
+            if let filename = card.windowPhotoFilename,
+               let image = WindowPhotoStore.load(filename: filename) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 42, height: 42)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.wbCyan.opacity(0.42), lineWidth: 1)
+                    }
+            } else {
+                BirdSilhouette()
+                    .fill(Color.wbCyan.opacity(0.82))
+                    .frame(width: 42, height: 42)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(card.soundShape.displayName)
                     .font(.headline)

@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 @testable import WindowBirdChorusCards
 
 @MainActor
@@ -58,6 +59,33 @@ final class ListenStoreAcceptanceTests: XCTestCase {
         }
         XCTAssertEqual(store.activeCards.count, 0)
         print("ACCEPTANCE_READBACK REQ-ERROR-001: note length validation and simulated save failure both returned en-US recovery messages")
+    }
+
+    func testWindowPhotoFilenamePersistsWithCard() throws {
+        let url = temporaryStoreURL("window-photo")
+        let store = ListenStore(storageURL: url)
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 4, height: 4))
+        let imageData = renderer.pngData { context in
+            UIColor.cyan.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 4, height: 4))
+        }
+
+        var draft = ListenDraft()
+        draft.note = "Morning window with pale sun."
+        let cardID = UUID()
+        let filename = try store.persistWindowPhoto(data: imageData, cardID: cardID)
+
+        var card = draft.makeCard(id: cardID)
+        card.windowPhotoFilename = filename
+        try store.save(card)
+
+        let reloaded = ListenStore(storageURL: url)
+        XCTAssertEqual(reloaded.activeCards.first?.windowPhotoFilename, filename)
+        XCTAssertNotNil(WindowPhotoStore.load(filename: filename))
+
+        try reloaded.delete(id: cardID)
+        XCTAssertNil(WindowPhotoStore.load(filename: filename))
+        print("ACCEPTANCE_READBACK REQ-PERSIST-001: window view photo filename persisted with ListenCard and deleted with card")
     }
 
     private func temporaryStoreURL(_ name: String) -> URL {

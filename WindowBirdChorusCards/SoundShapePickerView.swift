@@ -10,6 +10,11 @@ struct SoundShapePickerView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     intro
+                    WindowViewPhotoSection(
+                        draft: $draft,
+                        screenFraction: 0.50,
+                        caption: draft.soundShape.displayName
+                    )
                     shapeGrid
                     reviewLink
                     directionSection

@@ -60,7 +60,7 @@ def main() -> int:
     checks["all_required_screens_present"] = all(screen in source for screen in REQUIRED_SCREENS)
     checks["all_required_models_present"] = all(model in app_source for model in REQUIRED_MODELS)
     checks["storekit2_boundary_present"] = "import StoreKit" in app_source and "Product.products" in app_source and "purchase()" in app_source
-    checks["privacy_copy_present"] = "No microphone recording is required; optional notes stay private on device." in source
+    checks["privacy_copy_present"] = "No microphone recording is required; optional notes and window view photos stay private on device." in source
     checks["local_persistence_present"] = "JSONEncoder" in app_source and "JSONDecoder" in app_source and "applicationSupportDirectory" in app_source
     checks["crud_actions_present"] = all(term in app_source for term in ["Save Listen Card", "Archive Card", "Delete Card", "Edit Latest Card"])
     checks["error_states_present"] = all(term in app_source for term in ["Simulate Save Failure", "Simulate IAP Failure", "note under 240 characters"])

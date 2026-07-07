@@ -72,6 +72,10 @@ final class ListenStore {
         }
         try validate(card)
         if let index = cards.firstIndex(where: { $0.id == card.id }) {
+            let previousFilename = cards[index].windowPhotoFilename
+            if previousFilename != card.windowPhotoFilename, let previousFilename {
+                WindowPhotoStore.delete(filename: previousFilename)
+            }
             cards[index] = card
         } else {
             cards.append(card)
@@ -92,12 +96,18 @@ final class ListenStore {
     }
 
     func delete(id: UUID) throws {
-        let originalCount = cards.count
-        cards.removeAll { $0.id == id }
-        guard cards.count < originalCount else {
+        guard let card = cards.first(where: { $0.id == id }) else {
             throw ListenStoreError.cardNotFound
         }
+        if let filename = card.windowPhotoFilename {
+            WindowPhotoStore.delete(filename: filename)
+        }
+        cards.removeAll { $0.id == id }
         try persist()
+    }
+
+    func persistWindowPhoto(data: Data, cardID: UUID) throws -> String {
+        try WindowPhotoStore.save(data: data, cardID: cardID)
     }
 
     func resetForPreview() {

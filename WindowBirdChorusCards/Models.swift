@@ -121,6 +121,7 @@ struct ListenCard: Identifiable, Codable, Equatable, Hashable {
     var weather: WeatherTag
     var mood: MoodTag
     var note: String
+    var windowPhotoFilename: String?
     var status: ListenStatus
 
     init(
@@ -131,6 +132,7 @@ struct ListenCard: Identifiable, Codable, Equatable, Hashable {
         weather: WeatherTag,
         mood: MoodTag,
         note: String,
+        windowPhotoFilename: String? = nil,
         status: ListenStatus = .saved
     ) {
         self.id = id
@@ -140,6 +142,7 @@ struct ListenCard: Identifiable, Codable, Equatable, Hashable {
         self.weather = weather
         self.mood = mood
         self.note = note
+        self.windowPhotoFilename = windowPhotoFilename
         self.status = status
     }
 }
@@ -150,6 +153,8 @@ struct ListenDraft: Equatable, Hashable {
     var weather: WeatherTag = .paleSun
     var mood: MoodTag = .curious
     var note: String = ""
+    var windowPhotoFilename: String?
+    var pendingWindowPhotoData: Data?
 
     init() {}
 
@@ -159,6 +164,7 @@ struct ListenDraft: Equatable, Hashable {
         weather = card.weather
         mood = card.mood
         note = card.note
+        windowPhotoFilename = card.windowPhotoFilename
     }
 
     func makeCard(id: UUID = UUID(), heardAt: Date = Date()) -> ListenCard {
@@ -169,7 +175,8 @@ struct ListenDraft: Equatable, Hashable {
             soundShape: soundShape,
             weather: weather,
             mood: mood,
-            note: note.trimmingCharacters(in: .whitespacesAndNewlines)
+            note: note.trimmingCharacters(in: .whitespacesAndNewlines),
+            windowPhotoFilename: windowPhotoFilename
         )
     }
 }
@@ -225,4 +232,5 @@ enum VisualSlot: String, CaseIterable {
     case illustratedBirdSilhouetteCards
     case compassLikeDirectionRing
     case neighborhoodSoundDots
+    case windowViewPhotos
 }

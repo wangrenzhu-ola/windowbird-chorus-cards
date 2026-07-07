@@ -3,6 +3,10 @@ import Foundation
 enum AppCopy {
     static let privacyBoundary = "Listen cards, window view photos, and notes stay on this device. The listening flow does not require microphone recording. Premium offers may use limited tracking to understand what feels helpful."
     static let productName = "WindowBird Chorus Cards"
+    static let privacyPolicyTitle = "Privacy Policy"
+    static let userAgreementTitle = "User Agreement"
+    static let privacyPolicyURL = URL(string: "https://windowbirdchoruscards.example/legal/privacy-policy")!
+    static let userAgreementURL = URL(string: "https://windowbirdchoruscards.example/legal/user-agreement")!
 
     static let userVisibleSamples: [String] = [
         productName,
@@ -31,6 +35,8 @@ enum AppCopy {
         "Save Changes",
         "Archive Card",
         "Delete Card",
+        privacyPolicyTitle,
+        userAgreementTitle,
         "Purchase could not be completed. Your saved listen cards and current credits are still available.",
         privacyBoundary
     ]

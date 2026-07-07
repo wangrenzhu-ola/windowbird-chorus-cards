@@ -21,6 +21,8 @@ final class VisualLocaleAcceptanceTests: XCTestCase {
         XCTAssertTrue(AppCopy.privacyBoundary.contains("stay on this device"))
         XCTAssertTrue(AppCopy.privacyBoundary.contains("window view photos"))
         XCTAssertTrue(AppCopy.privacyBoundary.contains("does not require microphone recording"))
+        XCTAssertTrue(AppCopy.privacyPolicyURL.absoluteString.contains("privacy-policy"))
+        XCTAssertTrue(AppCopy.userAgreementURL.absoluteString.contains("user-agreement"))
         print("ACCEPTANCE_READBACK REQ-EMPTY-001 REQ-PRIVACY-001 Locale: core UI/paywall/privacy sample copy is en-US and includes privacy boundary")
     }
 

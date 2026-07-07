@@ -145,6 +145,7 @@ struct BadgeRoostView: View {
                 Text(AppCopy.privacyBoundary)
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
+                LegalLinksSection()
                 Button("Return to Morning Chorus") {
                     selectedTab = .morning
                 }

@@ -119,12 +119,13 @@ struct MorningChorusView: View {
 
     private var privacyCard: some View {
         GlassSurface {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 12) {
                 Label("Private by design", systemImage: "lock.fill")
                     .font(.headline)
                 Text(AppCopy.privacyBoundary)
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
+                LegalLinksSection()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }

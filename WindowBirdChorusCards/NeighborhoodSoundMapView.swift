@@ -19,7 +19,7 @@ struct NeighborhoodSoundMapView: View {
                     }
                     activeSection
                     archiveSection
-                    premiumEntry
+                    shopEntry
                 }
                 .padding(20)
             }
@@ -141,15 +141,15 @@ struct NeighborhoodSoundMapView: View {
         }
     }
 
-    private var premiumEntry: some View {
+    private var shopEntry: some View {
         GlassSurface {
             VStack(alignment: .leading, spacing: 10) {
-                Label("Premium map layers", systemImage: "sparkles")
+                Label("Chorus Credit Shop", systemImage: "bag.fill")
                     .font(.headline)
-                Text("Optional sticker roosts and dawn themes live in Badge Roost. Your saved cards stay readable without Premium.")
+                Text("Each new listen card costs \(ChorusCreditStore.saveCost.formatted()) credits. Open Badge Roost to buy more Chorus Credits.")
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
-                Button("Open Premium Boundary") {
+                Button("Open Chorus Credit Shop") {
                     selectedTab = .badges
                 }
                 .buttonStyle(.bordered)

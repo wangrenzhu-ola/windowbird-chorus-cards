@@ -5,12 +5,13 @@ final class WindowBirdCoreFlowUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    func testMorningToPickerDetailMapAndPremiumRuntimeFlow() throws {
+    func testMorningToPickerDetailMapAndConsumableShopRuntimeFlow() throws {
         let app = XCUIApplication()
         app.launchArguments = ["--windowbird-ui-test-store", "--reset-windowbird-store"]
         app.launch()
 
         XCTAssertTrue(app.staticTexts["WindowBird Chorus Cards"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["Chorus Credits"].waitForExistence(timeout: 5))
         addScreenshot(named: "01-morning-chorus", app: app)
 
         tapFirstExistingButton(in: app, labels: ["Start a new window listen", "Start a Listen"])
@@ -20,8 +21,12 @@ final class WindowBirdCoreFlowUITests: XCTestCase {
 
         tapFirstExistingButton(in: app, labels: ["Review the selected sound shape in Window Listen Detail", "Review Listen Card"])
         XCTAssertTrue(app.navigationBars["Window Listen Detail"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Save this new card for 10 credits."].waitForExistence(timeout: 5))
         tapFirstExistingButton(in: app, labels: ["Fill sample note"])
-        tapFirstExistingButton(in: app, labels: ["Save Listen Card"])
+        tapFirstExistingButton(in: app, labels: [
+            "Save Listen Card for 10 credits",
+            "Save Listen Card · 10 Credits"
+        ])
         XCTAssertTrue(app.staticTexts["Saved. This card will reappear after reopening the app."].waitForExistence(timeout: 5))
         addScreenshot(named: "03-window-listen-detail-saved", app: app)
 
@@ -32,12 +37,13 @@ final class WindowBirdCoreFlowUITests: XCTestCase {
 
         app.tabBars.buttons["Badges"].tap()
         XCTAssertTrue(app.navigationBars["Badge Roost"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["Purchase Premium Pack with StoreKit 2"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Chorus Credit Shop"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Simulate IAP Failure"].waitForExistence(timeout: 5))
         tapFirstExistingButton(in: app, labels: ["Simulate IAP Failure"])
-        XCTAssertTrue(app.staticTexts["Purchase could not be completed. Your free listening flow is still available."].waitForExistence(timeout: 5))
-        addScreenshot(named: "05-badge-roost-premium-failure", app: app)
+        XCTAssertTrue(app.staticTexts["Purchase could not be completed. Your saved listen cards and current credits are still available."].waitForExistence(timeout: 5))
+        addScreenshot(named: "05-badge-roost-consumable-failure", app: app)
 
-        print("XCODE_RUNTIME_FLOW PASS: launched simulator app and walked Morning Chorus -> Sound Shape Picker -> Window Listen Detail save -> Neighborhood Sound Map readback -> Badge Roost Premium failure")
+        print("XCODE_RUNTIME_FLOW PASS: launched simulator app and walked Morning Chorus -> Sound Shape Picker -> Window Listen Detail save -> Neighborhood Sound Map readback -> Badge Roost consumable failure")
     }
 
     private func tapFirstExistingButton(in app: XCUIApplication, labels: [String], file: StaticString = #filePath, line: UInt = #line) {

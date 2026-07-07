@@ -592,3 +592,71 @@ struct WindowViewPhotoReadOnly: View {
         }
     }
 }
+
+struct ChorusCreditBalanceBadge: View {
+    let balance: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "circle.hexagongrid.fill")
+                .foregroundStyle(Color.wbLime)
+            Text("\(balance.formatted()) Credits")
+                .font(.subheadline.weight(.bold).monospacedDigit())
+                .foregroundStyle(Color.wbText)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.wbPanelRaised.opacity(0.94), in: Capsule())
+        .overlay {
+            Capsule()
+                .stroke(Color.wbLime.opacity(0.42), lineWidth: 1)
+        }
+        .accessibilityLabel("Chorus credit balance \(balance)")
+    }
+}
+
+struct ChorusCreditPackCard: View {
+    let item: IAPCatalogItem
+    let displayPrice: String
+    let isPurchasing: Bool
+    let onPurchase: () -> Void
+
+    var body: some View {
+        GlassSurface(radius: 20) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text(item.creditTitle)
+                        .font(.headline)
+                        .foregroundStyle(Color.wbText)
+                    Spacer(minLength: 8)
+                    if item.isPromotion {
+                        Text("Limited Offer")
+                            .font(.caption2.weight(.bold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .foregroundStyle(Color.wbInk)
+                            .background(Color.wbAmber, in: Capsule())
+                    }
+                }
+                Text("Adds credits for saving new private listen cards.")
+                    .font(.caption)
+                    .foregroundStyle(Color.wbMuted)
+                Button(action: onPurchase) {
+                    HStack {
+                        Text(displayPrice)
+                            .font(.subheadline.weight(.bold))
+                        Spacer()
+                        Text(isPurchasing ? "Purchasing..." : "Buy Credits")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(item.isPromotion ? Color.wbAmber : Color.wbCyan)
+                .disabled(isPurchasing)
+                .accessibilityLabel("Buy \(item.creditTitle) for \(displayPrice)")
+            }
+            .frame(maxWidth: .infinity, minHeight: 118, alignment: .leading)
+        }
+    }
+}

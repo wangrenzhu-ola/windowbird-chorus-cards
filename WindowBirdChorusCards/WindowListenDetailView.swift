@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WindowListenDetailView: View {
     @Environment(ListenStore.self) private var listenStore
+    @Environment(ChorusCreditStore.self) private var creditStore
     @Binding var selectedTab: AppTab
     @State private var draft: ListenDraft
     @State private var currentCardID: UUID?
@@ -29,6 +30,7 @@ struct WindowListenDetailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     detailHeader
+                    creditSpendCard
                     if let errorMessage {
                         ErrorBanner(message: errorMessage)
                     }
@@ -53,6 +55,28 @@ struct WindowListenDetailView: View {
         }
         .navigationTitle("Window Listen Detail")
         .toolbarTitleDisplayMode(.inline)
+    }
+
+    private var creditSpendCard: some View {
+        GlassSurface {
+            HStack {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Chorus Credits")
+                        .font(.headline)
+                    if currentCardID == nil {
+                        Text("Save this new card for \(ChorusCreditStore.saveCost.formatted()) credits.")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.wbMuted)
+                    } else {
+                        Text("Editing an existing card is free.")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.wbMuted)
+                    }
+                }
+                Spacer()
+                ChorusCreditBalanceBadge(balance: creditStore.balance)
+            }
+        }
     }
 
     private var detailHeader: some View {
@@ -131,13 +155,29 @@ struct WindowListenDetailView: View {
         GlassSurface {
             VStack(spacing: 12) {
                 Button(action: saveCard) {
-                    Label("Save Listen Card", systemImage: "tray.and.arrow.down.fill")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
+                    if currentCardID == nil {
+                        Label("Save Listen Card · \(ChorusCreditStore.saveCost) Credits", systemImage: "tray.and.arrow.down.fill")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Label("Save Changes", systemImage: "tray.and.arrow.down.fill")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .tint(Color.wbCyan)
+                .accessibilityLabel(currentCardID == nil ? "Save Listen Card for \(ChorusCreditStore.saveCost) credits" : "Save Changes")
+
+                if currentCardID == nil && creditStore.balance < ChorusCreditStore.saveCost {
+                    Button("Get Chorus Credits") {
+                        selectedTab = .badges
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(Color.wbAmber)
+                    .frame(maxWidth: .infinity)
+                }
 
                 Button("Simulate Save Failure", action: simulateSaveFailure)
                     .buttonStyle(.bordered)
@@ -185,6 +225,10 @@ struct WindowListenDetailView: View {
 
     private func saveCard() {
         do {
+            if currentCardID == nil {
+                try creditStore.spendForNewCardSave()
+            }
+
             let id = currentCardID ?? UUID()
             let heardAt = originalHeardAt ?? Date()
             var card = draft.makeCard(id: id, heardAt: heardAt)
@@ -203,7 +247,7 @@ struct WindowListenDetailView: View {
             currentCardID = id
             originalHeardAt = heardAt
             errorMessage = nil
-            savedMessage = "Saved. This card will reappear after reopening the app."
+            savedMessage = "Saved. This card will reappear after reopening the app. Balance: \(creditStore.balance.formatted()) credits."
         } catch {
             errorMessage = error.localizedDescription
             savedMessage = nil

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MorningChorusView: View {
     @Environment(ListenStore.self) private var listenStore
-    @Environment(PremiumStore.self) private var premiumStore
+    @Environment(ChorusCreditStore.self) private var creditStore
     @Binding var selectedTab: AppTab
 
     var body: some View {
@@ -11,16 +11,34 @@ struct MorningChorusView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
+                    creditSummaryCard
                     todayCard
                     privacyCard
                     recentCard
-                    premiumEntry
+                    shopEntry
                 }
                 .padding(20)
             }
         }
         .navigationTitle("Morning Chorus")
         .toolbarTitleDisplayMode(.inline)
+    }
+
+    private var creditSummaryCard: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Label("Chorus Credits", systemImage: "circle.hexagongrid.fill")
+                        .font(.headline)
+                    Spacer()
+                    ChorusCreditBalanceBadge(balance: creditStore.balance)
+                }
+                Text("Saving a new listen card costs \(ChorusCreditStore.saveCost.formatted()) credits. You start with \(IAPProductCatalog.initialBalance.formatted()) credits.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     private var header: some View {
@@ -142,24 +160,15 @@ struct MorningChorusView: View {
         }
     }
 
-    private var premiumEntry: some View {
+    private var shopEntry: some View {
         GlassSurface {
             VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Label("Premium Dawn Pack", systemImage: premiumStore.isUnlocked ? "checkmark.seal.fill" : "sparkles")
-                        .font(.headline)
-                    Spacer()
-                    Text(premiumStore.accessState.displayName)
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(Color.wbInk)
-                        .background(Color.wbLime, in: Capsule())
-                }
-                Text("Extra visual themes and sticker roosts are optional. The core free listening flow stays open.")
+                Label("Chorus Credit Shop", systemImage: "bag.fill")
+                    .font(.headline)
+                Text("Need more credits for new listen cards? Badge Roost lists every credit pack without showing internal product codes.")
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
-                Button("Open Badge Roost") {
+                Button("Open Chorus Credit Shop") {
                     selectedTab = .badges
                 }
                 .buttonStyle(.bordered)

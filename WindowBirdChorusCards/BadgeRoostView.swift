@@ -2,7 +2,8 @@ import SwiftUI
 
 struct BadgeRoostView: View {
     @Environment(ListenStore.self) private var listenStore
-    @Environment(PremiumStore.self) private var premiumStore
+    @Environment(ChorusCreditStore.self) private var creditStore
+    @Environment(ConsumableStore.self) private var consumableStore
     @Binding var selectedTab: AppTab
     @State private var showFailureCopy = false
 
@@ -12,7 +13,10 @@ struct BadgeRoostView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
-                    paywall
+                    balanceCard
+                    saveCostCard
+                    shopSection(title: "Limited Offers", items: IAPProductCatalog.promotionProducts)
+                    shopSection(title: "Chorus Credit Packs", items: IAPProductCatalog.standardProducts)
                     badgeGrid
                     freeFlowReminder
                 }
@@ -22,7 +26,7 @@ struct BadgeRoostView: View {
         .navigationTitle("Badge Roost")
         .toolbarTitleDisplayMode(.inline)
         .task {
-            await premiumStore.loadProducts()
+            await consumableStore.loadProducts()
         }
     }
 
@@ -31,10 +35,84 @@ struct BadgeRoostView: View {
             Text("Badge Roost")
                 .font(.title.bold())
                 .foregroundStyle(Color.wbText)
-            Text("Collect quiet exploration badges from saved listens. Premium adds visual packs only; the core flow stays free.")
+            Text("Collect badges from saved listens and buy Chorus Credits when you need more room for new cards.")
                 .font(.body)
                 .foregroundStyle(Color.wbMuted)
         }
+    }
+
+    private var balanceCard: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 12) {
+                Label("Chorus Credit Shop", systemImage: "circle.hexagongrid.fill")
+                    .font(.headline)
+                HStack {
+                    ChorusCreditBalanceBadge(balance: creditStore.balance)
+                    Spacer()
+                    Text(consumableStore.state.displayName)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.wbMuted)
+                }
+                if let message = consumableStore.lastSuccessMessage {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundStyle(Color.wbLime)
+                }
+                if let message = consumableStore.lastErrorMessage ?? (showFailureCopy ? "Purchase could not be completed. Your saved listen cards and current credits are still available." : nil) {
+                    ErrorBanner(message: message)
+                }
+                Button("Simulate IAP Failure") {
+                    showFailureCopy = true
+                    Task {
+                        await consumableStore.purchase(IAPProductCatalog.promotionProducts[0], simulateFailure: true)
+                    }
+                }
+                .font(.caption)
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.wbAmber)
+                .accessibilityLabel("Simulate IAP Failure")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var saveCostCard: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 8) {
+                Label("Easy to spot spend", systemImage: "tray.and.arrow.down.fill")
+                    .font(.headline)
+                Text("Each new listen card costs \(ChorusCreditStore.saveCost.formatted()) Chorus Credits when you tap Save in Window Listen Detail. Editing an existing card is free.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func shopSection(title: String, items: [IAPCatalogItem]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.title3.bold())
+                .foregroundStyle(Color.wbText)
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 168), spacing: 12)], spacing: 12) {
+                ForEach(items) { item in
+                    ChorusCreditPackCard(
+                        item: item,
+                        displayPrice: consumableStore.displayPrice(for: item),
+                        isPurchasing: isPurchasing(item)
+                    ) {
+                        Task { await consumableStore.purchase(item) }
+                    }
+                }
+            }
+        }
+    }
+
+    private func isPurchasing(_ item: IAPCatalogItem) -> Bool {
+        if case .purchasing(let title) = consumableStore.state {
+            return title == item.creditTitle
+        }
+        return false
     }
 
     private var badgeGrid: some View {
@@ -59,61 +137,10 @@ struct BadgeRoostView: View {
         }
     }
 
-    private var paywall: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    Label("Premium Dawn Pack", systemImage: premiumStore.isUnlocked ? "checkmark.seal.fill" : "sparkles")
-                        .font(.headline)
-                    Spacer()
-                    Text(premiumStore.accessState.displayName)
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(Color.wbInk)
-                        .background(Color.wbLime, in: Capsule())
-                }
-
-                Text(premiumStore.paywallSubtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-
-                if let message = premiumStore.lastErrorMessage ?? (showFailureCopy ? "Purchase could not be completed. Your free listening flow is still available." : nil) {
-                    ErrorBanner(message: message)
-                }
-
-                HStack(spacing: 12) {
-                    Button("Purchase Premium Pack") {
-                        Task { await premiumStore.purchasePremiumPack() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color.wbCyan)
-                    .accessibilityLabel("Purchase Premium Pack with StoreKit 2")
-
-                    Button("Restore Purchase") {
-                        Task { await premiumStore.restorePurchases() }
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(Color.wbCyan)
-                    .accessibilityLabel("Restore Premium purchase")
-                }
-
-                Button("Simulate IAP Failure") {
-                    showFailureCopy = true
-                    Task { await premiumStore.purchasePremiumPack(simulateFailure: true) }
-                }
-                .font(.caption)
-                .buttonStyle(.plain)
-                .foregroundStyle(Color.wbAmber)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
     private var freeFlowReminder: some View {
         GlassSurface {
             VStack(alignment: .leading, spacing: 10) {
-                Label("Free flow remains open", systemImage: "leaf.fill")
+                Label("Private cards stay local", systemImage: "leaf.fill")
                     .font(.headline)
                 Text(AppCopy.privacyBoundary)
                     .font(.subheadline)

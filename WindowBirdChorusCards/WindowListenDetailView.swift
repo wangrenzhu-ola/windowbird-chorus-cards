@@ -9,6 +9,7 @@ struct WindowListenDetailView: View {
     @State private var originalHeardAt: Date?
     @State private var errorMessage: String?
     @State private var savedMessage: String?
+    @FocusState private var isNoteFocused: Bool
 
     init(selectedTab: Binding<AppTab>, draft: ListenDraft) {
         _selectedTab = selectedTab
@@ -54,9 +55,11 @@ struct WindowListenDetailView: View {
                 }
                 .padding(20)
             }
+            .scrollDismissesKeyboard(.interactively)
         }
         .navigationTitle("Window Listen Detail")
         .toolbarTitleDisplayMode(.inline)
+        .keyboardDismissToolbar(focus: $isNoteFocused)
     }
 
     private var creditSpendCard: some View {
@@ -118,6 +121,7 @@ struct WindowListenDetailView: View {
                 Text("Private note")
                     .font(.headline)
                 TextEditor(text: $draft.note)
+                    .focused($isNoteFocused)
                     .frame(minHeight: 112)
                     .padding(8)
                     .scrollContentBackground(.hidden)
@@ -166,6 +170,7 @@ struct WindowListenDetailView: View {
 
                 if currentCardID == nil && creditStore.balance < ChorusCreditStore.saveCost {
                     Button("Get Chorus Credits") {
+                        dismissNoteKeyboard()
                         selectedTab = .shop
                     }
                     .buttonStyle(.bordered)
@@ -193,6 +198,7 @@ struct WindowListenDetailView: View {
                 }
 
                 Button("Open Neighborhood Sound Map") {
+                    dismissNoteKeyboard()
                     selectedTab = .map
                 }
                 .buttonStyle(.plain)
@@ -219,7 +225,12 @@ struct WindowListenDetailView: View {
         .accessibilityElement(children: .combine)
     }
 
+    private func dismissNoteKeyboard() {
+        isNoteFocused = false
+    }
+
     private func saveCard() {
+        dismissNoteKeyboard()
         do {
             if currentCardID == nil {
                 try creditStore.spendForNewCardSave()
@@ -256,6 +267,7 @@ struct WindowListenDetailView: View {
     }
 
     private func archiveCard() {
+        dismissNoteKeyboard()
         guard let currentCardID else { return }
         do {
             try listenStore.archive(id: currentCardID)
@@ -268,6 +280,7 @@ struct WindowListenDetailView: View {
     }
 
     private func deleteCard() {
+        dismissNoteKeyboard()
         guard let currentCardID else { return }
         do {
             try listenStore.delete(id: currentCardID)

@@ -660,3 +660,19 @@ struct ChorusCreditPackCard: View {
         }
     }
 }
+
+extension View {
+    func keyboardDismissToolbar(focus: FocusState<Bool>.Binding) -> some View {
+        toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    focus.wrappedValue = false
+                }
+                .fontWeight(.semibold)
+                .foregroundStyle(Color.wbCyan)
+                .accessibilityLabel("Dismiss keyboard")
+            }
+        }
+    }
+}

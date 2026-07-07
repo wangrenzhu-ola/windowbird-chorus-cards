@@ -25,22 +25,61 @@ struct ListenMetadataFields: View {
 
                 Text("Weather and mood")
                     .font(.headline)
-                Picker("Weather", selection: $draft.weather) {
-                    ForEach(WeatherTag.allCases) { weather in
-                        Text(weather.displayName).tag(weather)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel("Weather tag")
 
-                Picker("Mood", selection: $draft.mood) {
-                    ForEach(MoodTag.allCases) { mood in
-                        Text(mood.displayName).tag(mood)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel("Mood tag")
+                ScrollableOptionPicker(
+                    title: "Weather tag",
+                    items: Array(WeatherTag.allCases),
+                    selection: $draft.weather,
+                    label: { $0.displayName }
+                )
+
+                ScrollableOptionPicker(
+                    title: "Mood tag",
+                    items: Array(MoodTag.allCases),
+                    selection: $draft.mood,
+                    label: { $0.displayName }
+                )
             }
         }
+    }
+}
+
+private struct ScrollableOptionPicker<Item: Hashable & Identifiable>: View {
+    let title: String
+    let items: [Item]
+    @Binding var selection: Item
+    let label: (Item) -> String
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(items) { item in
+                    let isSelected = item.id == selection.id
+                    Button {
+                        selection = item
+                    } label: {
+                        Text(label(item))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(isSelected ? Color.wbInk : Color.wbText)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(
+                                Capsule(style: .continuous)
+                                    .fill(isSelected ? Color.wbCyan : Color.wbPanelRaised.opacity(0.92))
+                            )
+                            .overlay(
+                                Capsule(style: .continuous)
+                                    .stroke(isSelected ? Color.wbCyan.opacity(0.45) : Color.wbCyan.opacity(0.22), lineWidth: 1)
+                            )
+                            // Prevent the system segmented control from truncating labels with ellipses.
+                            .fixedSize(horizontal: true, vertical: false)
+                    }
+                    .accessibilityLabel("\(title): \(label(item))")
+                    .accessibilityAddTraits(isSelected ? .isSelected : [])
+                }
+            }
+            .padding(.vertical, 2)
+        }
+        .accessibilityElement(children: .contain)
     }
 }

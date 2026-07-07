@@ -37,6 +37,14 @@ final class ListenStoreAcceptanceTests: XCTestCase {
         XCTAssertEqual(reloaded.archivedCards.count, 1)
         XCTAssertTrue(reloaded.badges.contains { $0.type == .archivedMemory })
 
+        var archivedDraft = ListenDraft(card: reloaded.archivedCards[0])
+        archivedDraft.note = "Archived cards stay archived when edited for local cleanup."
+        try reloaded.save(archivedDraft.makeCard(id: created.id, heardAt: created.heardAt))
+        XCTAssertEqual(reloaded.activeCards.count, 0)
+        XCTAssertEqual(reloaded.archivedCards.count, 1)
+        XCTAssertEqual(reloaded.archivedCards.first?.status, .archived)
+        XCTAssertEqual(reloaded.archivedCards.first?.note, archivedDraft.note)
+
         try reloaded.delete(id: created.id)
         XCTAssertTrue(reloaded.cards.isEmpty)
         print("ACCEPTANCE_READBACK REQ-CRUD-001 REQ-PERSIST-001: created, edited, reloaded, archived, and deleted one ListenCard using local JSON at \(url.path)")

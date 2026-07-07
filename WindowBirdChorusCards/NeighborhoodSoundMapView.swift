@@ -93,7 +93,7 @@ struct NeighborhoodSoundMapView: View {
                         .buttonStyle(.plain)
                         Divider()
                     }
-                    Text("Swipe-style actions are also available inside Window Listen Detail: edit, archive, or delete.")
+                    Text("Open any listen card to edit it, archive it, or delete it from this device.")
                         .font(.caption)
                         .foregroundStyle(Color.wbMuted)
                 }
@@ -109,7 +109,7 @@ struct NeighborhoodSoundMapView: View {
                     withAnimation { showArchive.toggle() }
                 } label: {
                     HStack {
-                        Label("Archived or deleted state", systemImage: "archivebox.fill")
+                        Label("Archived listens", systemImage: "archivebox.fill")
                             .font(.headline)
                         Spacer()
                         Image(systemName: showArchive ? "chevron.up" : "chevron.down")
@@ -119,7 +119,7 @@ struct NeighborhoodSoundMapView: View {
 
                 if showArchive {
                     if listenStore.archivedCards.isEmpty {
-                        Text("No archived listen cards yet. Archive from Window Listen Detail when a card should leave the active map.")
+                        Text("No archived listen cards yet. Archive from Window Listen Detail when a card should leave the active map without being deleted.")
                             .font(.subheadline)
                             .foregroundStyle(Color.wbMuted)
                     } else {

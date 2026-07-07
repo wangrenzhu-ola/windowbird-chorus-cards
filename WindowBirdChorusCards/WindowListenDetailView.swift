@@ -1,14 +1,17 @@
 import SwiftUI
+import UIKit
 
 struct WindowListenDetailView: View {
     @Environment(ListenStore.self) private var listenStore
     @Environment(ChorusCreditStore.self) private var creditStore
+    @Environment(\.dismiss) private var dismiss
     @Binding var selectedTab: AppTab
     @State private var draft: ListenDraft
     @State private var currentCardID: UUID?
     @State private var originalHeardAt: Date?
     @State private var errorMessage: String?
     @State private var savedMessage: String?
+    @State private var showSavedButtonState = false
     @FocusState private var isNoteFocused: Bool
 
     init(selectedTab: Binding<AppTab>, draft: ListenDraft) {
@@ -34,9 +37,6 @@ struct WindowListenDetailView: View {
                     creditSpendCard
                     if let errorMessage {
                         ErrorBanner(message: errorMessage)
-                    }
-                    if let savedMessage {
-                        savedBanner(savedMessage)
                     }
                     if currentCardID == nil {
                         rhythmSummaryCard
@@ -153,20 +153,51 @@ struct WindowListenDetailView: View {
         GlassSurface {
             VStack(spacing: 12) {
                 Button(action: saveCard) {
-                    if currentCardID == nil {
-                        Label("Save Listen Card · \(ChorusCreditStore.saveCost) Credits", systemImage: "tray.and.arrow.down.fill")
+                    if showSavedButtonState {
+                        Label("Saved", systemImage: "checkmark.circle.fill")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                     } else {
-                        Label("Save Changes", systemImage: "tray.and.arrow.down.fill")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
+                        if currentCardID == nil {
+                            Label("Save Listen Card · \(ChorusCreditStore.saveCost) Credits", systemImage: "tray.and.arrow.down.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                        } else {
+                            Label("Save Changes", systemImage: "tray.and.arrow.down.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                        }
                     }
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
-                .tint(Color.wbCyan)
+                .tint(showSavedButtonState ? Color.wbLime : Color.wbCyan)
+                .disabled(draft.status == .archived)
                 .accessibilityLabel(currentCardID == nil ? "Save Listen Card for \(ChorusCreditStore.saveCost) credits" : "Save Changes")
+
+                if let savedMessage {
+                    actionStatusBanner(
+                        message: savedMessage,
+                        systemImage: "checkmark.circle.fill",
+                        tint: Color.wbLime
+                    )
+                } else if let errorMessage {
+                    actionStatusBanner(
+                        message: errorMessage,
+                        systemImage: "exclamationmark.triangle.fill",
+                        tint: Color.wbAmber
+                    )
+                } else if draft.status == .archived {
+                    Text("This listen card is archived. Reopen it from the archive list if you only want to review it.")
+                        .font(.caption)
+                        .foregroundStyle(Color.wbMuted)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                } else {
+                    Text("Tap save to keep this listen card on this device.")
+                        .font(.caption)
+                        .foregroundStyle(Color.wbMuted)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
 
                 if currentCardID == nil && creditStore.balance < ChorusCreditStore.saveCost {
                     Button("Get Chorus Credits") {
@@ -207,20 +238,21 @@ struct WindowListenDetailView: View {
         }
     }
 
-    private func savedBanner(_ message: String) -> some View {
+    private func actionStatusBanner(message: String, systemImage: String, tint: Color) -> some View {
         HStack(spacing: 10) {
-            Image(systemName: "checkmark.seal.fill")
-                .foregroundStyle(Color.wbLime)
+            Image(systemName: systemImage)
+                .foregroundStyle(tint)
             Text(message)
-                .font(.subheadline.weight(.semibold))
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(Color.wbText)
             Spacer(minLength: 0)
         }
-        .padding(12)
-        .background(Color.wbPanelRaised.opacity(0.94), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.wbPanelRaised.opacity(0.94), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color.wbLime.opacity(0.42), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .stroke(tint.opacity(0.38), lineWidth: 1)
         }
         .accessibilityElement(children: .combine)
     }
@@ -231,6 +263,7 @@ struct WindowListenDetailView: View {
 
     private func saveCard() {
         dismissNoteKeyboard()
+        showSavedButtonState = false
         do {
             if currentCardID == nil {
                 try creditStore.spendForNewCardSave()
@@ -239,6 +272,7 @@ struct WindowListenDetailView: View {
             let id = currentCardID ?? UUID()
             let heardAt = originalHeardAt ?? Date()
             var card = draft.makeCard(id: id, heardAt: heardAt)
+            card.status = draft.status
 
             if let pendingData = draft.pendingWindowPhotoData {
                 if let oldFilename = card.windowPhotoFilename {
@@ -255,9 +289,12 @@ struct WindowListenDetailView: View {
             originalHeardAt = heardAt
             errorMessage = nil
             savedMessage = "Saved. This card will reappear after reopening the app. Balance: \(creditStore.balance.formatted()) credits."
+            showTemporarySavedState()
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
         } catch {
             errorMessage = error.localizedDescription
             savedMessage = nil
+            UINotificationFeedbackGenerator().notificationOccurred(.error)
         }
     }
 
@@ -271,8 +308,10 @@ struct WindowListenDetailView: View {
         guard let currentCardID else { return }
         do {
             try listenStore.archive(id: currentCardID)
+            draft.status = .archived
             errorMessage = nil
             savedMessage = "Archived. You can still review it from the sound map archive section."
+            dismiss()
         } catch {
             errorMessage = error.localizedDescription
             savedMessage = nil
@@ -291,6 +330,16 @@ struct WindowListenDetailView: View {
         } catch {
             errorMessage = error.localizedDescription
             savedMessage = nil
+        }
+    }
+
+    private func showTemporarySavedState() {
+        showSavedButtonState = true
+        Task {
+            try? await Task.sleep(for: .seconds(1.6))
+            await MainActor.run {
+                showSavedButtonState = false
+            }
         }
     }
 }

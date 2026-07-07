@@ -32,4 +32,11 @@ final class VisualLocaleAcceptanceTests: XCTestCase {
             XCTAssertTrue(AppCopy.userVisibleSamples.contains(screen), "Missing screen copy: \(screen)")
         }
     }
+
+    func testBadgeDescriptionsMatchCurrentRules() {
+        XCTAssertEqual(SoundBadgeType.firstDawn.description, "Save your first private window listen.")
+        XCTAssertEqual(SoundBadgeType.threeDirections.description, "Hear from three different directions.")
+        XCTAssertEqual(SoundBadgeType.weekendRoost.description, "Save a private listen during a weekend pause.")
+        XCTAssertEqual(SoundBadgeType.archivedMemory.description, "Archive a listen you no longer need on the main map.")
+    }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 import WebKit
 
 struct LegalWebView: UIViewRepresentable {
-    let url: URL
+    let document: LegalDocument
     @Binding var isLoading: Bool
     @Binding var errorMessage: String?
 
@@ -20,17 +20,17 @@ struct LegalWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        guard context.coordinator.lastRequestedURL != url else { return }
-        context.coordinator.lastRequestedURL = url
+        guard context.coordinator.lastRequestedDocument != document else { return }
+        context.coordinator.lastRequestedDocument = document
         isLoading = true
         errorMessage = nil
-        webView.load(URLRequest(url: url))
+        webView.loadHTMLString(document.htmlContent, baseURL: document.url.deletingLastPathComponent())
     }
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         @Binding var isLoading: Bool
         @Binding var errorMessage: String?
-        var lastRequestedURL: URL?
+        var lastRequestedDocument: LegalDocument?
 
         init(isLoading: Binding<Bool>, errorMessage: Binding<String?>) {
             _isLoading = isLoading
@@ -67,7 +67,7 @@ struct LegalDocumentView: View {
                     ErrorBanner(message: errorMessage)
                         .padding(20)
                 }
-                LegalWebView(url: document.url, isLoading: $isLoading, errorMessage: $errorMessage)
+                LegalWebView(document: document, isLoading: $isLoading, errorMessage: $errorMessage)
                     .overlay {
                         if isLoading && errorMessage == nil {
                             ProgressView("Loading \(document.title)...")

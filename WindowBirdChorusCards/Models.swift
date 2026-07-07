@@ -155,6 +155,7 @@ struct ListenDraft: Equatable, Hashable {
     var note: String = ""
     var windowPhotoFilename: String?
     var pendingWindowPhotoData: Data?
+    var status: ListenStatus = .saved
 
     init() {}
 
@@ -165,6 +166,7 @@ struct ListenDraft: Equatable, Hashable {
         mood = card.mood
         note = card.note
         windowPhotoFilename = card.windowPhotoFilename
+        status = card.status
     }
 
     func makeCard(id: UUID = UUID(), heardAt: Date = Date()) -> ListenCard {
@@ -176,7 +178,8 @@ struct ListenDraft: Equatable, Hashable {
             weather: weather,
             mood: mood,
             note: note.trimmingCharacters(in: .whitespacesAndNewlines),
-            windowPhotoFilename: windowPhotoFilename
+            windowPhotoFilename: windowPhotoFilename,
+            status: status
         )
     }
 }
@@ -214,7 +217,7 @@ enum SoundBadgeType: String, Codable, CaseIterable, Identifiable, Hashable {
         switch self {
         case .firstDawn: "Save your first private window listen."
         case .threeDirections: "Hear from three different directions."
-        case .weekendRoost: "Review your map during a weekend pause."
+        case .weekendRoost: "Save a private listen during a weekend pause."
         case .archivedMemory: "Archive a listen you no longer need on the main map."
         }
     }

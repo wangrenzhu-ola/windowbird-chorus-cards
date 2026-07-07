@@ -355,7 +355,7 @@ struct WindowViewPhotoHero: View {
     var caption: String?
 
     private var heroHeight: CGFloat {
-        UIScreen.main.bounds.height * screenFraction
+        min(UIScreen.main.bounds.height * screenFraction, 320)
     }
 
     var body: some View {
@@ -364,17 +364,17 @@ struct WindowViewPhotoHero: View {
                 if let uiImage {
                     Image(uiImage: uiImage)
                         .resizable()
-                        .scaledToFill()
+                        .scaledToFit()
                         .frame(maxWidth: .infinity)
-                        .frame(height: heroHeight)
-                        .clipped()
+                        .frame(maxHeight: heroHeight)
+                        .background(Color.wbInk.opacity(0.82))
                         .overlay(alignment: .bottomLeading) {
                             LinearGradient(
                                 colors: [.clear, Color.wbInk.opacity(0.72)],
                                 startPoint: .center,
                                 endPoint: .bottom
                             )
-                            .frame(height: heroHeight * 0.38)
+                            .frame(height: min(heroHeight * 0.38, 120))
                         }
                         .overlay(alignment: .bottomLeading) {
                             if let caption {

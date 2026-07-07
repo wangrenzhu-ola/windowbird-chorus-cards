@@ -386,7 +386,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WindowBird Chorus";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add an optional window view photo to your private listen cards.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "WindowBird uses the camera when you capture a window view while logging birdsong rhythm, direction, weather, and mood. The photo stays in your private listen card on this device.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "WindowBird declares microphone access for optional window birdsong listening helpers. You still choose the sound shape, direction, weather, and mood yourself, and audio is never uploaded.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "WindowBird lets you save a window view photo from a listen card back to your photo library when you tap Export Window View, keeping the image outside your private sound map.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "WindowBird Chorus Cards reads your photo library only when you choose a window view image for a private listen card, so you can pair outside scenery with the rhythm and direction you heard.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "WindowBird uses this permission to measure whether Premium Dawn Pack offers are helpful after you explore your private morning chorus and neighborhood sound map. Your listen cards and window view photos are never sold.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -423,7 +427,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WindowBird Chorus";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Add an optional window view photo to your private listen cards.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "WindowBird uses the camera when you capture a window view while logging birdsong rhythm, direction, weather, and mood. The photo stays in your private listen card on this device.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "WindowBird declares microphone access for optional window birdsong listening helpers. You still choose the sound shape, direction, weather, and mood yourself, and audio is never uploaded.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "WindowBird lets you save a window view photo from a listen card back to your photo library when you tap Export Window View, keeping the image outside your private sound map.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "WindowBird Chorus Cards reads your photo library only when you choose a window view image for a private listen card, so you can pair outside scenery with the rhythm and direction you heard.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "WindowBird uses this permission to measure whether Premium Dawn Pack offers are helpful after you explore your private morning chorus and neighborhood sound map. Your listen cards and window view photos are never sold.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

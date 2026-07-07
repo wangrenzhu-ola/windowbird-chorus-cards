@@ -450,6 +450,8 @@ struct WindowViewPhotoSection: View {
 
     @State private var selectedItem: PhotosPickerItem?
     @State private var displayedImage: UIImage?
+    @State private var showCamera = false
+    @State private var exportMessage: String?
 
     var body: some View {
         GlassSurface(radius: 20) {
@@ -462,16 +464,47 @@ struct WindowViewPhotoSection: View {
 
                 WindowViewPhotoHero(uiImage: displayedImage, screenFraction: screenFraction, caption: caption)
 
+                if let exportMessage {
+                    Text(exportMessage)
+                        .font(.caption)
+                        .foregroundStyle(Color.wbLime)
+                }
+
                 HStack(spacing: 12) {
                     PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
-                        Label(displayedImage == nil ? "Add Window View" : "Replace Photo", systemImage: "photo.on.rectangle.angled")
+                        Label(displayedImage == nil ? "Choose from Photos" : "Replace from Photos", systemImage: "photo.on.rectangle.angled")
                             .font(.subheadline.weight(.semibold))
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(Color.wbCyan)
 
-                    if displayedImage != nil {
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button {
+                            showCamera = true
+                        } label: {
+                            Label("Capture Window View", systemImage: "camera.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Color.wbCyan)
+                    }
+                }
+
+                if displayedImage != nil {
+                    HStack(spacing: 12) {
+                        Button {
+                            Task { await exportDisplayedImage() }
+                        } label: {
+                            Label("Export Window View", systemImage: "square.and.arrow.down")
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Color.wbLime)
+                        .accessibilityLabel("Export Window View to photo library")
+
                         Button("Remove", role: .destructive) {
                             removePhoto()
                         }
@@ -487,13 +520,25 @@ struct WindowViewPhotoSection: View {
                 if let data = try? await newItem.loadTransferable(type: Data.self),
                    let image = UIImage(data: data) {
                     await MainActor.run {
-                        draft.pendingWindowPhotoData = data
-                        draft.windowPhotoFilename = nil
-                        displayedImage = image
+                        applyPickedImage(image, data: data)
                     }
                 }
             }
         }
+        .sheet(isPresented: $showCamera) {
+            CameraImagePicker { image in
+                let data = image.jpegData(compressionQuality: 0.88) ?? image.pngData() ?? Data()
+                applyPickedImage(image, data: data)
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    private func applyPickedImage(_ image: UIImage, data: Data) {
+        draft.pendingWindowPhotoData = data
+        draft.windowPhotoFilename = nil
+        displayedImage = image
+        exportMessage = nil
     }
 
     private func refreshDisplayedImage() {
@@ -513,6 +558,17 @@ struct WindowViewPhotoSection: View {
         draft.windowPhotoFilename = nil
         displayedImage = nil
         selectedItem = nil
+        exportMessage = nil
+    }
+
+    private func exportDisplayedImage() async {
+        guard let displayedImage else { return }
+        do {
+            try await WindowPhotoLibraryExporter.export(displayedImage)
+            exportMessage = "Exported to Photos. Your listen card still keeps a private copy on this device."
+        } catch {
+            exportMessage = error.localizedDescription
+        }
     }
 }
 

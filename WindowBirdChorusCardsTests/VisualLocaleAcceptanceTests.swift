@@ -18,8 +18,9 @@ final class VisualLocaleAcceptanceTests: XCTestCase {
             let range = NSRange(location: 0, length: (copy as NSString).length)
             XCTAssertEqual(hanRegex.numberOfMatches(in: copy, range: range), 0, "Expected en-US copy only: \(copy)")
         }
-        XCTAssertTrue(AppCopy.privacyBoundary.contains("No microphone recording is required"))
+        XCTAssertTrue(AppCopy.privacyBoundary.contains("stay on this device"))
         XCTAssertTrue(AppCopy.privacyBoundary.contains("window view photos"))
+        XCTAssertTrue(AppCopy.privacyBoundary.contains("does not require microphone recording"))
         print("ACCEPTANCE_READBACK REQ-EMPTY-001 REQ-PRIVACY-001 Locale: core UI/paywall/privacy sample copy is en-US and includes privacy boundary")
     }
 

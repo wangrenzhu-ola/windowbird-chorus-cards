@@ -16,6 +16,7 @@ enum AppCopy {
         "Neighborhood Sound Map",
         "Chorus Credit Shop",
         "Badge Roost",
+        "Listen",
         "Exploration badges",
         "Start a Listen",
         "Continue to Listen Card",

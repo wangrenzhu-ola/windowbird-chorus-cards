@@ -23,12 +23,14 @@ Scheme: `WindowBirdChorusCards`
 
 ## Required screens
 
-1. Morning Chorus
-2. Sound Shape Picker (rhythm only — metadata on the next screen)
+1. Morning Chorus (home tab)
+2. Sound Shape Picker (Listen tab)
 3. Window Listen Detail
 4. Neighborhood Sound Map
-5. Chorus Credit Shop (Shop tab)
-6. Badge Roost (linked from Morning Chorus and Sound Map)
+5. Badge Roost (Badges tab)
+6. Chorus Credit Shop (Shop tab)
+
+Bottom navigation: **Morning · Listen · Sound Map · Badges · Shop**
 
 ## Acceptance coverage
 

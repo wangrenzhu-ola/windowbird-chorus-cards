@@ -19,8 +19,6 @@ struct NeighborhoodSoundMapView: View {
                     }
                     activeSection
                     archiveSection
-                    badgesEntry
-                    shopEntry
                 }
                 .padding(20)
             }
@@ -75,11 +73,11 @@ struct NeighborhoodSoundMapView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Your sound map is quiet for now.")
                             .font(.subheadline.weight(.semibold))
-                        Text("Start a listen from Morning Chorus to place the first neighborhood sound dot.")
+                        Text("Start a listen from the Listen tab to place the first neighborhood sound dot.")
                             .font(.subheadline)
                             .foregroundStyle(Color.wbMuted)
-                        Button("Go to Morning Chorus") {
-                            selectedTab = .morning
+                        Button("Go to Listen") {
+                            selectedTab = .listen
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Color.wbCyan)
@@ -139,42 +137,6 @@ struct NeighborhoodSoundMapView: View {
                     }
                 }
             }
-        }
-    }
-
-    private var badgesEntry: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Exploration badges", systemImage: "rosette")
-                    .font(.headline)
-                Text("Earned quietly as you save listens — view them in Badge Roost.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-                NavigationLink("Open Badge Roost") {
-                    BadgeRoostView()
-                }
-                .buttonStyle(.bordered)
-                .tint(Color.wbCyan)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private var shopEntry: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Chorus Credit Shop", systemImage: "bag.fill")
-                    .font(.headline)
-                Text("Each new listen card costs \(ChorusCreditStore.saveCost.formatted()) credits. Open the Shop tab to buy more Chorus Credits.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-                Button("Open Chorus Credit Shop") {
-                    selectedTab = .shop
-                }
-                .buttonStyle(.bordered)
-                .tint(Color.wbCyan)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

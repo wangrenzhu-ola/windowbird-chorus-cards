@@ -80,6 +80,8 @@ def main() -> int:
     checks["crud_actions_present"] = all(term in app_source for term in ["Save Listen Card · 10 Credits", "Archive Card", "Delete Card", "Edit Latest Card"])
     checks["error_states_present"] = all(term in app_source for term in ["Simulate Save Failure", "Simulate IAP Failure", "note under 240 characters"])
     checks["shop_tab_present"] = 'Label("Shop"' in app_source and "ChorusCreditShopView" in app_source
+    checks["listen_tab_present"] = 'Label("Listen"' in app_source and "AppTab.listen" in app_source
+    checks["badges_tab_present"] = 'Label("Badges"' in app_source and "AppTab.badges" in app_source
     checks["visual_slots_present"] = all(slot in app_source for slot in REQUIRED_VISUALS)
     checks["acceptance_tests_present"] = all(req in tests_source or req in source for req in REQUIRED_REQUIREMENTS)
     checks["app_copy_has_no_han_characters"] = not bool(re.search(r"[\u4e00-\u9fff]", app_source))

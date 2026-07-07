@@ -2,8 +2,10 @@ import SwiftUI
 
 enum AppTab: Hashable {
     case morning
+    case listen
     case map
     case badges
+    case shop
 }
 
 struct AppShell: View {
@@ -18,16 +20,28 @@ struct AppShell: View {
             .tag(AppTab.morning)
 
             NavigationStack {
+                SoundShapePickerView(selectedTab: $selectedTab, draft: ListenDraft())
+            }
+            .tabItem { Label("Listen", systemImage: "waveform") }
+            .tag(AppTab.listen)
+
+            NavigationStack {
                 NeighborhoodSoundMapView(selectedTab: $selectedTab)
             }
             .tabItem { Label("Sound Map", systemImage: "map.fill") }
             .tag(AppTab.map)
 
             NavigationStack {
-                BadgeRoostView(selectedTab: $selectedTab)
+                BadgeRoostView()
             }
             .tabItem { Label("Badges", systemImage: "rosette") }
             .tag(AppTab.badges)
+
+            NavigationStack {
+                ChorusCreditShopView()
+            }
+            .tabItem { Label("Shop", systemImage: "bag.fill") }
+            .tag(AppTab.shop)
         }
         .tint(Color.wbCyan)
         .preferredColorScheme(.dark)

@@ -12,13 +12,13 @@ struct NeighborhoodSoundMapView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
+                    windowMemorySpotlight
                     NeighborhoodSoundDots(cards: listenStore.activeCards)
                     if let actionMessage {
                         savedBanner(actionMessage)
                     }
                     activeSection
                     archiveSection
-                    premiumEntry
                 }
                 .padding(20)
             }
@@ -32,9 +32,35 @@ struct NeighborhoodSoundMapView: View {
             Text("Neighborhood Sound Map")
                 .font(.title.bold())
                 .foregroundStyle(Color.wbText)
-            Text("Review saved rhythm, direction, weather, and mood patterns. This is a private memory map, not a live community service.")
+            Text("Review saved rhythm, direction, weather, and mood patterns. Window view photos stay on this private memory map.")
                 .font(.body)
                 .foregroundStyle(Color.wbMuted)
+        }
+    }
+
+    @ViewBuilder
+    private var windowMemorySpotlight: some View {
+        if let featured = listenStore.activeCards.first(where: { $0.windowPhotoFilename != nil }) {
+            GlassSurface(radius: 20) {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Window memory")
+                        .font(.headline)
+                    WindowViewPhotoReadOnly(
+                        card: featured,
+                        screenFraction: 0.52,
+                        caption: "\(featured.soundShape.displayName) from \(featured.direction.displayName)"
+                    )
+                    NavigationLink {
+                        WindowListenDetailView(selectedTab: $selectedTab, card: featured)
+                    } label: {
+                        Text("Open Listen Card")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.wbCyan)
+                }
+            }
         }
     }
 
@@ -47,11 +73,11 @@ struct NeighborhoodSoundMapView: View {
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Your sound map is quiet for now.")
                             .font(.subheadline.weight(.semibold))
-                        Text("Start a listen from Morning Chorus to place the first neighborhood sound dot.")
+                        Text("Start a listen from the Listen tab to place the first neighborhood sound dot.")
                             .font(.subheadline)
                             .foregroundStyle(Color.wbMuted)
-                        Button("Go to Morning Chorus") {
-                            selectedTab = .morning
+                        Button("Go to Listen") {
+                            selectedTab = .listen
                         }
                         .buttonStyle(.borderedProminent)
                         .tint(Color.wbCyan)
@@ -67,7 +93,7 @@ struct NeighborhoodSoundMapView: View {
                         .buttonStyle(.plain)
                         Divider()
                     }
-                    Text("Swipe-style actions are also available inside Window Listen Detail: edit, archive, or delete.")
+                    Text("Open any listen card to edit it, archive it, or delete it from this device.")
                         .font(.caption)
                         .foregroundStyle(Color.wbMuted)
                 }
@@ -83,7 +109,7 @@ struct NeighborhoodSoundMapView: View {
                     withAnimation { showArchive.toggle() }
                 } label: {
                     HStack {
-                        Label("Archived or deleted state", systemImage: "archivebox.fill")
+                        Label("Archived listens", systemImage: "archivebox.fill")
                             .font(.headline)
                         Spacer()
                         Image(systemName: showArchive ? "chevron.up" : "chevron.down")
@@ -93,7 +119,7 @@ struct NeighborhoodSoundMapView: View {
 
                 if showArchive {
                     if listenStore.archivedCards.isEmpty {
-                        Text("No archived listen cards yet. Archive from Window Listen Detail when a card should leave the active map.")
+                        Text("No archived listen cards yet. Archive from Window Listen Detail when a card should leave the active map without being deleted.")
                             .font(.subheadline)
                             .foregroundStyle(Color.wbMuted)
                     } else {
@@ -111,24 +137,6 @@ struct NeighborhoodSoundMapView: View {
                     }
                 }
             }
-        }
-    }
-
-    private var premiumEntry: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Premium map layers", systemImage: "sparkles")
-                    .font(.headline)
-                Text("Optional sticker roosts and dawn themes live in Badge Roost. Your saved cards stay readable without Premium.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-                Button("Open Premium Boundary") {
-                    selectedTab = .badges
-                }
-                .buttonStyle(.bordered)
-                .tint(Color.wbCyan)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

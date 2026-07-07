@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		DCF482312FFCE2F200648A9D /* store.storekit in Resources */ = {isa = PBXBuildFile; fileRef = DCF482302FFCE2F200648A9D /* store.storekit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A00000000000000000000021 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		A00000000000000000000002 /* WindowBirdChorusCards.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WindowBirdChorusCards.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000000000000000000003 /* WindowBirdChorusCardsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WindowBirdChorusCardsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00000000000000000000003 /* WindowBirdChorusCardsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WindowBirdChorusCardsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCF482302FFCE2F200648A9D /* store.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = store.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		A00000000000000000000008 = {
 			isa = PBXGroup;
 			children = (
+				DCF482302FFCE2F200648A9D /* store.storekit */,
 				A00000000000000000000004 /* WindowBirdChorusCards */,
 				A00000000000000000000005 /* WindowBirdChorusCardsTests */,
 				B00000000000000000000005 /* WindowBirdChorusCardsUITests */,
@@ -206,6 +212,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCF482312FFCE2F200648A9D /* store.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,13 +386,18 @@
 		A00000000000000000000025 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WindowBird Chorus";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "WindowBird uses the camera when you capture a window view while logging birdsong rhythm, direction, weather, and mood. The photo stays in your private listen card on this device.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "WindowBird declares microphone access for optional window birdsong listening helpers. You still choose the sound shape, direction, weather, and mood yourself, and audio is never uploaded.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "WindowBird lets you save a window view photo from a listen card back to your photo library when you tap Export Window View, keeping the image outside your private sound map.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "WindowBird Chorus Cards reads your photo library only when you choose a window view image for a private listen card, so you can pair outside scenery with the rhythm and direction you heard.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "WindowBird uses this permission to measure whether Premium Dawn Pack offers are helpful after you explore your private morning chorus and neighborhood sound map. Your listen cards and window view photos are never sold.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -395,9 +407,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -415,13 +428,18 @@
 		A00000000000000000000026 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "WindowBird Chorus";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSCameraUsageDescription = "WindowBird uses the camera when you capture a window view while logging birdsong rhythm, direction, weather, and mood. The photo stays in your private listen card on this device.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "WindowBird declares microphone access for optional window birdsong listening helpers. You still choose the sound shape, direction, weather, and mood yourself, and audio is never uploaded.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "WindowBird lets you save a window view photo from a listen card back to your photo library when you tap Export Window View, keeping the image outside your private sound map.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "WindowBird Chorus Cards reads your photo library only when you choose a window view image for a private listen card, so you can pair outside scenery with the rhythm and direction you heard.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "WindowBird uses this permission to measure whether Premium Dawn Pack offers are helpful after you explore your private morning chorus and neighborhood sound map. Your listen cards and window view photos are never sold.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -431,9 +449,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -456,7 +475,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -478,7 +497,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -499,7 +518,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
@@ -520,7 +539,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 0.0.2;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.windowbird.choruscards.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;

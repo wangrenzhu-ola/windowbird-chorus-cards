@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MorningChorusView: View {
     @Environment(ListenStore.self) private var listenStore
-    @Environment(PremiumStore.self) private var premiumStore
+    @Environment(ChorusCreditStore.self) private var creditStore
     @Binding var selectedTab: AppTab
 
     var body: some View {
@@ -11,16 +11,33 @@ struct MorningChorusView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
+                    creditSummaryCard
                     todayCard
                     privacyCard
                     recentCard
-                    premiumEntry
                 }
                 .padding(20)
             }
         }
         .navigationTitle("Morning Chorus")
         .toolbarTitleDisplayMode(.inline)
+    }
+
+    private var creditSummaryCard: some View {
+        GlassSurface {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Label("Chorus Credits", systemImage: "circle.hexagongrid.fill")
+                        .font(.headline)
+                    Spacer()
+                    ChorusCreditBalanceBadge(balance: creditStore.balance)
+                }
+                Text("Saving a new listen card costs \(ChorusCreditStore.saveCost.formatted()) credits. You start with \(IAPProductCatalog.initialBalance.formatted()) credits.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     private var header: some View {
@@ -82,8 +99,8 @@ struct MorningChorusView: View {
     }
 
     private var startListenButton: some View {
-        NavigationLink {
-            SoundShapePickerView(selectedTab: $selectedTab, draft: ListenDraft())
+        Button {
+            selectedTab = .listen
         } label: {
             Text("Start a Listen")
                 .font(.headline)
@@ -101,12 +118,13 @@ struct MorningChorusView: View {
 
     private var privacyCard: some View {
         GlassSurface {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 12) {
                 Label("Private by design", systemImage: "lock.fill")
                     .font(.headline)
                 Text(AppCopy.privacyBoundary)
                     .font(.subheadline)
                     .foregroundStyle(Color.wbMuted)
+                LegalLinksSection()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -118,6 +136,11 @@ struct MorningChorusView: View {
                 Text(listenStore.activeCards.isEmpty ? "Starter action" : "Latest listen")
                     .font(.headline)
                 if let latest = listenStore.activeCards.first {
+                    WindowViewPhotoReadOnly(
+                        card: latest,
+                        screenFraction: 0.48,
+                        caption: "Latest window view"
+                    )
                     ListenCardRow(card: latest)
                     NavigationLink("Edit Latest Card") {
                         WindowListenDetailView(selectedTab: $selectedTab, card: latest)
@@ -127,38 +150,13 @@ struct MorningChorusView: View {
                     Text("Your sound map is quiet for now. Start with the rhythm you can describe, not a bird name you have to know.")
                         .font(.subheadline)
                         .foregroundStyle(Color.wbMuted)
-                    NavigationLink("Choose a Sound Shape") {
-                        SoundShapePickerView(selectedTab: $selectedTab, draft: ListenDraft())
+                    Button("Choose a Sound Shape") {
+                        selectedTab = .listen
                     }
                     .buttonStyle(.borderedProminent)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private var premiumEntry: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Label("Premium Dawn Pack", systemImage: premiumStore.isUnlocked ? "checkmark.seal.fill" : "sparkles")
-                        .font(.headline)
-                    Spacer()
-                    Text(premiumStore.accessState.displayName)
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(Color.wbInk)
-                        .background(Color.wbLime, in: Capsule())
-                }
-                Text("Extra visual themes and sticker roosts are optional. The core free listening flow stays open.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-                Button("Open Badge Roost") {
-                    selectedTab = .badges
-                }
-                .buttonStyle(.bordered)
-            }
         }
     }
 }
@@ -168,9 +166,22 @@ struct ListenCardRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            BirdSilhouette()
-                .fill(Color.wbCyan.opacity(0.82))
-                .frame(width: 42, height: 42)
+            if let filename = card.windowPhotoFilename,
+               let image = WindowPhotoStore.load(filename: filename) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 42, height: 42)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.wbCyan.opacity(0.42), lineWidth: 1)
+                    }
+            } else {
+                BirdSilhouette()
+                    .fill(Color.wbCyan.opacity(0.82))
+                    .frame(width: 42, height: 42)
+            }
             VStack(alignment: .leading, spacing: 4) {
                 Text(card.soundShape.displayName)
                     .font(.headline)

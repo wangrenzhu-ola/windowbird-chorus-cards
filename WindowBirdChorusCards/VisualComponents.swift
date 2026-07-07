@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 extension Color {
     static let wbInk = Color(red: 0.02, green: 0.05, blue: 0.06)
@@ -343,5 +344,335 @@ struct ErrorBanner: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Error: \(message)")
+    }
+}
+
+// MARK: - Window view photos (user-uploaded)
+
+struct WindowViewPhotoHero: View {
+    let uiImage: UIImage?
+    var screenFraction: CGFloat = 0.55
+    var caption: String?
+
+    private var heroHeight: CGFloat {
+        min(UIScreen.main.bounds.height * screenFraction, 320)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Group {
+                if let uiImage {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity)
+                        .frame(maxHeight: heroHeight)
+                        .background(Color.wbInk.opacity(0.82))
+                        .overlay(alignment: .bottomLeading) {
+                            LinearGradient(
+                                colors: [.clear, Color.wbInk.opacity(0.72)],
+                                startPoint: .center,
+                                endPoint: .bottom
+                            )
+                            .frame(height: min(heroHeight * 0.38, 120))
+                        }
+                        .overlay(alignment: .bottomLeading) {
+                            if let caption {
+                                Text(caption)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(Color.wbText)
+                                    .padding(16)
+                            }
+                        }
+                } else {
+                    ZStack {
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 28,
+                            bottomLeadingRadius: 8,
+                            bottomTrailingRadius: 28,
+                            topTrailingRadius: 8,
+                            style: .continuous
+                        )
+                        .fill(Color.wbInk.opacity(0.82))
+                        .overlay {
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 28,
+                                bottomLeadingRadius: 8,
+                                bottomTrailingRadius: 28,
+                                topTrailingRadius: 8,
+                                style: .continuous
+                            )
+                            .stroke(Color.wbCyan.opacity(0.30), style: StrokeStyle(lineWidth: 1, dash: [6, 5]))
+                        }
+                        VStack(spacing: 10) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.largeTitle)
+                                .foregroundStyle(Color.wbCyan.opacity(0.72))
+                            Text("No window view yet")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(Color.wbMuted)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: heroHeight)
+                }
+            }
+            .clipShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 28,
+                    bottomLeadingRadius: 8,
+                    bottomTrailingRadius: 28,
+                    topTrailingRadius: 8,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: 28,
+                    bottomLeadingRadius: 8,
+                    bottomTrailingRadius: 28,
+                    topTrailingRadius: 8,
+                    style: .continuous
+                )
+                .stroke(Color.wbCyan.opacity(uiImage == nil ? 0.30 : 0.42), lineWidth: 1)
+            }
+            .shadow(color: Color.wbCyan.opacity(uiImage == nil ? 0.08 : 0.18), radius: 16, y: 8)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(uiImage == nil ? "No window view photo" : "Window view photo, \(caption ?? "saved listen")")
+    }
+}
+
+struct WindowViewPhotoSection: View {
+    @Binding var draft: ListenDraft
+    var screenFraction: CGFloat = 0.55
+    var caption: String?
+
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var displayedImage: UIImage?
+    @State private var showCamera = false
+    @State private var exportMessage: String?
+
+    var body: some View {
+        GlassSurface(radius: 20) {
+            VStack(alignment: .leading, spacing: 14) {
+                Label("Window view", systemImage: "camera.viewfinder")
+                    .font(.headline)
+                Text("Optional photo of what you saw outside while listening. Stored privately on this device.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.wbMuted)
+
+                WindowViewPhotoHero(uiImage: displayedImage, screenFraction: screenFraction, caption: caption)
+
+                if let exportMessage {
+                    Text(exportMessage)
+                        .font(.caption)
+                        .foregroundStyle(Color.wbLime)
+                }
+
+                HStack(spacing: 12) {
+                    PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
+                        Label(displayedImage == nil ? "Choose from Photos" : "Replace from Photos", systemImage: "photo.on.rectangle.angled")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.wbCyan)
+
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button {
+                            showCamera = true
+                        } label: {
+                            Label("Capture Window View", systemImage: "camera.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Color.wbCyan)
+                    }
+                }
+
+                if displayedImage != nil {
+                    HStack(spacing: 12) {
+                        Button {
+                            Task { await exportDisplayedImage() }
+                        } label: {
+                            Label("Export Window View", systemImage: "square.and.arrow.down")
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Color.wbLime)
+                        .accessibilityLabel("Export Window View to photo library")
+
+                        Button("Remove", role: .destructive) {
+                            removePhoto()
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+            }
+        }
+        .onAppear(perform: refreshDisplayedImage)
+        .onChange(of: selectedItem) { _, newItem in
+            guard let newItem else { return }
+            Task {
+                if let data = try? await newItem.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    await MainActor.run {
+                        applyPickedImage(image, data: data)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showCamera) {
+            CameraImagePicker { image in
+                let data = image.jpegData(compressionQuality: 0.88) ?? image.pngData() ?? Data()
+                applyPickedImage(image, data: data)
+            }
+            .ignoresSafeArea()
+        }
+    }
+
+    private func applyPickedImage(_ image: UIImage, data: Data) {
+        draft.pendingWindowPhotoData = data
+        draft.windowPhotoFilename = nil
+        displayedImage = image
+        exportMessage = nil
+    }
+
+    private func refreshDisplayedImage() {
+        if let data = draft.pendingWindowPhotoData, let image = UIImage(data: data) {
+            displayedImage = image
+            return
+        }
+        if let filename = draft.windowPhotoFilename {
+            displayedImage = WindowPhotoStore.load(filename: filename)
+            return
+        }
+        displayedImage = nil
+    }
+
+    private func removePhoto() {
+        draft.pendingWindowPhotoData = nil
+        draft.windowPhotoFilename = nil
+        displayedImage = nil
+        selectedItem = nil
+        exportMessage = nil
+    }
+
+    private func exportDisplayedImage() async {
+        guard let displayedImage else { return }
+        do {
+            try await WindowPhotoLibraryExporter.export(displayedImage)
+            exportMessage = "Exported to Photos. Your listen card still keeps a private copy on this device."
+        } catch {
+            exportMessage = error.localizedDescription
+        }
+    }
+}
+
+struct WindowViewPhotoReadOnly: View {
+    let card: ListenCard
+    var screenFraction: CGFloat = 0.50
+    var caption: String?
+
+    private var uiImage: UIImage? {
+        guard let filename = card.windowPhotoFilename else { return nil }
+        return WindowPhotoStore.load(filename: filename)
+    }
+
+    var body: some View {
+        if uiImage != nil {
+            WindowViewPhotoHero(
+                uiImage: uiImage,
+                screenFraction: screenFraction,
+                caption: caption ?? "\(card.soundShape.displayName) • \(card.direction.displayName)"
+            )
+        }
+    }
+}
+
+struct ChorusCreditBalanceBadge: View {
+    let balance: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "circle.hexagongrid.fill")
+                .foregroundStyle(Color.wbLime)
+            Text("\(balance.formatted()) Credits")
+                .font(.subheadline.weight(.bold).monospacedDigit())
+                .foregroundStyle(Color.wbText)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.wbPanelRaised.opacity(0.94), in: Capsule())
+        .overlay {
+            Capsule()
+                .stroke(Color.wbLime.opacity(0.42), lineWidth: 1)
+        }
+        .accessibilityLabel("Chorus credit balance \(balance)")
+    }
+}
+
+struct ChorusCreditPackCard: View {
+    let item: IAPCatalogItem
+    let displayPrice: String
+    let isPurchasing: Bool
+    let onPurchase: () -> Void
+
+    var body: some View {
+        GlassSurface(radius: 20) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text(item.creditTitle)
+                        .font(.headline)
+                        .foregroundStyle(Color.wbText)
+                    Spacer(minLength: 8)
+                    if item.isPromotion {
+                        Text("Limited Offer")
+                            .font(.caption2.weight(.bold))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .foregroundStyle(Color.wbInk)
+                            .background(Color.wbAmber, in: Capsule())
+                    }
+                }
+                Text("Adds credits for saving new private listen cards.")
+                    .font(.caption)
+                    .foregroundStyle(Color.wbMuted)
+                Button(action: onPurchase) {
+                    HStack {
+                        Text(displayPrice)
+                            .font(.subheadline.weight(.bold))
+                        Spacer()
+                        Text(isPurchasing ? "Purchasing..." : "Buy Credits")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(item.isPromotion ? Color.wbAmber : Color.wbCyan)
+                .disabled(isPurchasing)
+                .accessibilityLabel("Buy \(item.creditTitle) for \(displayPrice)")
+            }
+            .frame(maxWidth: .infinity, minHeight: 118, alignment: .leading)
+        }
+    }
+}
+
+extension View {
+    func keyboardDismissToolbar(focus: FocusState<Bool>.Binding) -> some View {
+        toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    focus.wrappedValue = false
+                }
+                .fontWeight(.semibold)
+                .foregroundStyle(Color.wbCyan)
+                .accessibilityLabel("Dismiss keyboard")
+            }
+        }
     }
 }

@@ -2,9 +2,6 @@ import SwiftUI
 
 struct BadgeRoostView: View {
     @Environment(ListenStore.self) private var listenStore
-    @Environment(PremiumStore.self) private var premiumStore
-    @Binding var selectedTab: AppTab
-    @State private var showFailureCopy = false
 
     var body: some View {
         ZStack {
@@ -12,26 +9,21 @@ struct BadgeRoostView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     header
-                    paywall
                     badgeGrid
-                    freeFlowReminder
                 }
                 .padding(20)
             }
         }
         .navigationTitle("Badge Roost")
         .toolbarTitleDisplayMode(.inline)
-        .task {
-            await premiumStore.loadProducts()
-        }
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Badge Roost")
+            Text("Exploration badges")
                 .font(.title.bold())
                 .foregroundStyle(Color.wbText)
-            Text("Collect quiet exploration badges from saved listens. Premium adds visual packs only; the core flow stays free.")
+            Text("Quiet milestones from saved listens. Badges stay on your private sound map.")
                 .font(.body)
                 .foregroundStyle(Color.wbMuted)
         }
@@ -56,75 +48,6 @@ struct BadgeRoostView: View {
                 }
                 .accessibilityLabel("Badge \(badgeType.displayName), \(earned == nil ? "locked" : "earned")")
             }
-        }
-    }
-
-    private var paywall: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    Label("Premium Dawn Pack", systemImage: premiumStore.isUnlocked ? "checkmark.seal.fill" : "sparkles")
-                        .font(.headline)
-                    Spacer()
-                    Text(premiumStore.accessState.displayName)
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(Color.wbInk)
-                        .background(Color.wbLime, in: Capsule())
-                }
-
-                Text(premiumStore.paywallSubtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-
-                if let message = premiumStore.lastErrorMessage ?? (showFailureCopy ? "Purchase could not be completed. Your free listening flow is still available." : nil) {
-                    ErrorBanner(message: message)
-                }
-
-                HStack(spacing: 12) {
-                    Button("Purchase Premium Pack") {
-                        Task { await premiumStore.purchasePremiumPack() }
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color.wbCyan)
-                    .accessibilityLabel("Purchase Premium Pack with StoreKit 2")
-
-                    Button("Restore Purchase") {
-                        Task { await premiumStore.restorePurchases() }
-                    }
-                    .buttonStyle(.bordered)
-                    .tint(Color.wbCyan)
-                    .accessibilityLabel("Restore Premium purchase")
-                }
-
-                Button("Simulate IAP Failure") {
-                    showFailureCopy = true
-                    Task { await premiumStore.purchasePremiumPack(simulateFailure: true) }
-                }
-                .font(.caption)
-                .buttonStyle(.plain)
-                .foregroundStyle(Color.wbAmber)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    private var freeFlowReminder: some View {
-        GlassSurface {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("Free flow remains open", systemImage: "leaf.fill")
-                    .font(.headline)
-                Text(AppCopy.privacyBoundary)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.wbMuted)
-                Button("Return to Morning Chorus") {
-                    selectedTab = .morning
-                }
-                .buttonStyle(.bordered)
-                .tint(Color.wbCyan)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
